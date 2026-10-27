@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
-import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr";
-
+import { ArrowUpRightIcon } from "@/components/ui/ikone";
 import { ARIA } from "@/content/navigacija";
 import { cn } from "@/lib/cn";
 

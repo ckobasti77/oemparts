@@ -10,7 +10,7 @@ export const pocetna = {
   },
   hero: {
     naslov: "Originalni i OEM delovi za VW grupu",
-    uvod: "Veleprodaja delova za Volkswagen, Audi, Škoda, SEAT i Cupra. Radimo sa servisima, auto-mehaničarima i firmama.",
+    uvod: "Veleprodaja delova za Volkswagen, Audi, Škoda, SEAT i Cupra. Radimo sa servisima, automehaničarima i firmama.",
     iliPozovite: "Ili pozovite",
     natpis: "Prikaz: generički automobil, nije konkretan model.",
     altSlike: "Rendgenski prikaz automobila sa vidljivim delovima motora, vešanja i kočnica",
@@ -38,7 +38,7 @@ export const pocetna = {
       },
       {
         naslov: "Veleprodaja za servise i firme",
-        tekst: "Radimo sa servisima, auto-mehaničarima i firmama koje redovno nabavljaju delove.",
+        tekst: "Radimo sa servisima, automehaničarima i firmama koje redovno nabavljaju delove.",
       },
       {
         naslov: "Kupovina kako vam odgovara",
@@ -49,7 +49,7 @@ export const pocetna = {
   kako: { naslov: "Kako kupiti", link: "Koraci i česta pitanja" },
   saradnja: {
     naslov: "Saradnja za servise i firme",
-    tekst: "Euromotors Plus je registrovan kao veleprodaja. Sa servisima, auto-mehaničarima i firmama dogovaramo nabavku delova: pošaljete upit, dobijete ponudu, a deo preuzimate ili vam ga šaljemo, uz račun.",
+    tekst: "Euromotors Plus je registrovan kao veleprodaja. Sa servisima, automehaničarima i firmama dogovaramo nabavku delova: pošaljete upit, dobijete ponudu, a deo preuzimate ili vam ga šaljemo, uz račun.",
     link: "Kako izgleda saradnja",
   },
   upit: {

@@ -18,12 +18,15 @@ export function telHref(telefon: string | null | undefined): string | null {
 }
 
 /**
- * `viber://chat?number=%2B381641234567`. Viber za ovaj oblik ne dokumentuje unapred upisan
- * tekst, pa se poruka kopira pri kliku (ODLUKA K01-08).
+ * `viber://chat?number=%2B381641234567`, sa `&draft=` (URL-kodirano) kad postoji poruka.
+ * Viber za ovaj oblik ne dokumentuje unapred upisan tekst: aplikacija koja ga ne čita samo
+ * otvori razgovor. Zato forma upita pri kliku i kopira poruku (ODLUKE K01-08 i K05).
  */
-export function viberHref(telefon: string | null | undefined): string | null {
+export function viberHref(telefon: string | null | undefined, tekst?: string): string | null {
   const e164 = normalizePhone(telefon);
-  return e164 ? `viber://chat?number=${encodeURIComponent(`+${cifre(e164)}`)}` : null;
+  if (!e164) return null;
+  const base = `viber://chat?number=${encodeURIComponent(`+${cifre(e164)}`)}`;
+  return tekst && tekst.trim() ? `${base}&draft=${encodeURIComponent(tekst)}` : base;
 }
 
 /** `https://wa.me/381641234567`, sa `?text=` (URL-kodirano) kad postoji poruka. */

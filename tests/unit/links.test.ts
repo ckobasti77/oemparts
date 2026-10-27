@@ -9,6 +9,7 @@ import {
   kpJeGenericki,
   mailtoHref,
   mapaEmbedSrc,
+  mapaLink,
   nabroj,
   popuniKanale,
   telHref,
@@ -64,6 +65,24 @@ describe("linkovi kanala", () => {
 
   it("viber:// sa kodiranim plusom", () => {
     expect(viberHref(KONTAKT.viber)).toBe("viber://chat?number=%2B381600000000");
+  });
+
+  it("viber:// sa porukom u draft parametru (dijakritika, novi red, posebni znaci)", () => {
+    expect(viberHref(KONTAKT.viber, "Upit: kočioni diskovi\nIme: Đorđe")).toBe(
+      "viber://chat?number=%2B381600000000&draft=Upit%3A%20ko%C4%8Dioni%20diskovi%0AIme%3A%20%C4%90or%C4%91e",
+    );
+    expect(viberHref(KONTAKT.viber, "A&B #1 + 50% ? ć ž")).toBe(
+      "viber://chat?number=%2B381600000000&draft=A%26B%20%231%20%2B%2050%25%20%3F%20%C4%87%20%C5%BE",
+    );
+    expect(viberHref(KONTAKT.viber, "  ")).toBe("viber://chat?number=%2B381600000000");
+    expect(viberHref("", "tekst")).toBeNull();
+  });
+
+  it("mapa za ugradnju i link ka mapi kodiraju adresu (dijakritika, zarez, &)", () => {
+    expect(mapaEmbedSrc("Kneza Miloša 1, Čačak")).toBe(
+      "https://www.google.com/maps?q=Kneza%20Milo%C5%A1a%201%2C%20%C4%8Ca%C4%8Dak&output=embed",
+    );
+    expect(mapaLink("A & B")).toBe("https://www.google.com/maps/search/?api=1&query=A%20%26%20B");
   });
 
   it("WhatsApp bez i sa tekstom (dijakritika, novi red, posebni znaci)", () => {

@@ -45,19 +45,32 @@ export const oNamaStrana = {
   uvod: "Euromotors Plus je veleprodaja originalnih i OEM delova za vozila Volkswagen, Audi, Škoda, SEAT i Cupra. Kupci nas znaju i kao OEM Parts.",
 };
 
+/**
+ * Kontakt (plan K01 §4.9). `{kanali}` u meta opisu popunjava lib/links.ts samo kanalima koji
+ * imaju vrednost; rečenica o KP-u se dodaje samo kad KP link postoji (P4).
+ */
 export const kontaktStrana = {
   meta: {
     naslov: "Kontakt",
-    opis: "Kontakt Euromotors Plus · OEM Parts: telefon, Viber, WhatsApp, mejl i prodavnica na KupujemProdajem. Pošaljite i broj šasije za upit.",
+    opis: "Kontakt Euromotors Plus · OEM Parts, veleprodaje delova za vozila VW grupe. Javite nam se {kanali}. Za upit po delu pošaljite i broj šasije.",
+    opisKp: "Ponudu pogledajte i u prodavnici na KupujemProdajem.",
   },
+  kanaliMeta: ["telefon", "viber", "whatsapp", "email"] as const,
   naslov: "Kontakt",
   uvod: "Pozovite nas ili pišite. Za upit po delu pošaljite i broj šasije.",
+  kanaliNaslov: "Pozovite ili pišite",
+  kpVrednost: "Otvorite prodavnicu",
   upitNaslov: "Upit po broju šasije",
-  upitTekst: "Pošaljite broj šasije i šta vam treba.",
+  upitTekst: "Upišite broj šasije i šta vam treba. Sajt sastavi poruku, a vi je pošaljete iz svoje aplikacije.",
   radnoVreme: "Radno vreme",
   adresa: "Adresa",
   firma: "Podaci firme",
-  prikaziMapu: "Prikaži mapu (učitava Google mape)",
+  firmaPolja: { naziv: "Naziv", sediste: "Sedište", pib: "PIB", mb: "Matični broj" },
+  mapa: {
+    prikazi: "Prikaži mapu",
+    napomena: "Mapa se učitava sa Google mapa tek kada kliknete.",
+    naslov: "Mapa",
+  },
   otvoriMapu: "Otvori u Google mapama",
 };
 

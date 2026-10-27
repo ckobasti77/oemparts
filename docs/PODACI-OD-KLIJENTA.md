@@ -15,7 +15,7 @@ Pravilo P5: sajt ne navodi godine rada, broj artikala, rokove isporuke, garancij
 | Link KP prodavnice | `kp.url` | `https://www.kupujemprodajem.com/` (privremeno, početna platforme) | Pravi link ka prodavnici firme na KupujemProdajem. |
 | Domen sajta | `domen` | `https://www.example.com` (privremeno) | Koristi se za canonical, sitemap i deljenje. |
 | Adresa (ulica, poštanski broj, mesto) | `adresa.*` | prazno | Da li postoji lično preuzimanje i na kojoj adresi. Bez adrese nema mape ni lokalnog JSON-LD-a. |
-| Upit za mapu | `adresa.mapaUpit` | prazno | Tekst za Google mape (npr. adresa ili naziv radnje). |
+| Upit za mapu | `adresa.mapaUpit` | prazno | Tekst za Google mape (npr. adresa ili naziv radnje). Ako je prazno, koristi se adresa. Mapa se na `/kontakt/` prikazuje tek kad postoji adresa i učitava se tek na klik. |
 | Radno vreme | `radnoVreme` | prazno | Dani i sati. |
 | Pravni naziv firme | `firma.naziv` | prazno | Tačan naziv iz APR-a. |
 | PIB i matični broj | `firma.pib`, `firma.mb` | prazno | |
@@ -32,6 +32,12 @@ Pravilo P5: sajt ne navodi godine rada, broj artikala, rokove isporuke, garancij
 | Načini plaćanja | `content/kupovina.ts` | Sada neutralno: dogovara se pri potvrdi dela. |
 | Povrat, reklamacija, garancija | `content/kupovina.ts`, `content/pravno.ts` | Sada: „javite nam se telefonom ili mejlom“. |
 | Uslovi saradnje za servise (rabat, popusti, odloženo plaćanje, račun) | `content/saradnja.ts` | Ništa od toga se ne obećava dok se ne potvrdi. |
+| Saradnja (K05): rabat i popusti za servise i stalne saradnike | `content/saradnja.ts` → `FAQ_SARADNJA` | Sada: „Uslove dogovaramo direktno.“ Bez procenata i iznosa. |
+| Saradnja (K05): rok za ponudu i rok isporuke | `content/saradnja.ts` → `KORACI_SARADNJE` | Sada bez rokova („Proverimo delove i javimo vam ponudu.“). |
+| Saradnja (K05): načini plaćanja za firme (račun, avans, odloženo plaćanje) | `content/saradnja.ts` | Sada se ne pominju. |
+| Saradnja (K05): slanje za firme (kurirska služba, ko plaća, gde se šalje) | `content/saradnja.ts` → korak „Preuzimanje ili slanje“ | Sada: „Deo preuzimate lično ili vam ga šaljemo.“ |
+| Saradnja (K05): da li firma izdaje račun na firmu kupca | `content/saradnja.ts` → korak „Račun“, `STA_POSLATI` | Sajt tvrdi: „Za firme izdajemo račun na podatke firme.“ (plan K01 §6.5). |
+| Saradnja (K05): da li se prima lista delova za više vozila odjednom | `content/saradnja.ts` → `FAQ_SARADNJA` | Novo pitanje „Mogu li da pošaljem više delova odjednom?“ — potvrditi. |
 | Spisak marki i modela | `content/vozila.ts` | Godine i generacije namerno nisu navedene. |
 | Tehnički saveti u opisima grupa delova (pregled majstora) | `content/asortiman.ts` | Ispravljeno: zimske gume (bez brojke), DSG ulje, turbina, kod motora. K04 je ublažio i: kaiš alternatora, nosače motora, kvačilo, manžetnu poluosovine, akumulator, farove, kočionu tečnost (bez intervala), pločice (bez „3 mm“). |
 | Tehničke brojke i oznake koje ostaju u tekstu | `content/asortiman.ts` | Proveriti: „oko 14 V“ (alternator), „288 ili 312 mm“ (diskovi), „G12 ili G13“ (rashladna tečnost), „504 00/507 00“ (ulje), greška „P2015“ (klapne usisne grane), „205/55 R16“ (primer dimenzije). |
@@ -42,6 +48,7 @@ Pravilo P5: sajt ne navodi godine rada, broj artikala, rokove isporuke, garancij
 
 | Šta | Napomena |
 |---|---|
-| Viber Business nalog | Ako postoji, poruka iz upita može da se unapred upiše (`viber.me/<broj>?text=`). Sada se poruka kopira i nalepi. |
+| Viber Business nalog | Ako postoji, poruka iz upita može pouzdano da se unapred upiše (`viber.me/<broj>?text=`). Sada link nosi poruku u parametru `draft` (Viber ga ne dokumentuje za obične brojeve), a poruka se pri kliku i kopira, pa se nalepi ako se ne pojavi. Proveriti na telefonu sa Androidom i iPhone-om. |
+| Upit po šasiji: kom kanalu ide poruka | Forma nudi Viber, WhatsApp i mejl, samo kanale koji imaju vrednost u `content/site.ts`. Ako firma ne želi upite nekim kanalom, ostaviti ga prazno. |
 | Google Business Profile | Link ide u JSON-LD `sameAs`. |
 | Logo | Potvrda znaka i provera žiga (sličnost sa amblemom EU, vidi `_izvor/autodelovi/docs/brand/LOGO.md`, „Otvorene stavke“). |

@@ -2,8 +2,10 @@
  * Upit po broju šasije (P2): provera polja i sastav poruke. Čiste funkcije; forma (K05)
  * samo prikazuje rezultat. Ništa se ne šalje na server.
  */
+import { site } from "@/content/site";
 import { UPIT_GRESKE, UPIT_LIMITI, UPIT_POLJA, UPIT_PORUKA } from "@/content/upit";
 import { formatPhone, normalizePhone } from "@/lib/format";
+import { mailtoHref, viberHref, whatsappHref } from "@/lib/links";
 import { validateVin } from "@/lib/vin";
 
 export type UpitPolja = {
@@ -33,8 +35,8 @@ function red(s: string): string {
   return s.replace(/\s+/g, " ").trim();
 }
 
-/** Višeredno polje: zadržava redove, `\r\n` → `\n`, bez praznog viška. */
-function tekst(s: string): string {
+/** Višeredno polje: zadržava redove, `\r\n` → `\n`, bez praznog viška. Brojač u formi meri isto. */
+export function tekst(s: string): string {
   return s
     .replace(/\r\n?/g, "\n")
     .split("\n")
@@ -57,7 +59,8 @@ function markaZaPoruku(marka: string): string {
 export function proveriUpit(polja: UpitPolja): UpitGreske {
   const greske: UpitGreske = {};
   const ime = red(polja.ime);
-  if (ime.length < 2) greske.ime = UPIT_GRESKE.imePrazno;
+  if (!ime) greske.ime = UPIT_GRESKE.imePrazno;
+  else if (ime.length < 2) greske.ime = UPIT_GRESKE.imeKratko;
   else if (ime.length > UPIT_LIMITI.ime) greske.ime = zameni(UPIT_GRESKE.predugo, { max: UPIT_LIMITI.ime });
 
   if (!red(polja.telefon)) greske.telefon = UPIT_GRESKE.telefonPrazno;
@@ -117,4 +120,29 @@ export function naslovPoruke(polja: UpitPolja): string {
   if (red(polja.vin)) return zameni(UPIT_PORUKA.naslovVin, { vin: validateVin(polja.vin).normalizovan });
   const vozilo = [markaZaPoruku(polja.marka), red(polja.model)].filter(Boolean).join(" ");
   return vozilo ? zameni(UPIT_PORUKA.naslovVozilo, { vozilo }) : UPIT_PORUKA.naslovOpsti;
+}
+
+export type LinkoviPoruke = { viber: string | null; whatsapp: string | null; email: string | null };
+
+/**
+ * Linkovi za slanje cele poruke (plan K01 §7.5): Viber i WhatsApp nose tekst, mejl naslov i telo.
+ * Kanal bez vrednosti u `content/site.ts` daje `null` i ne prikazuje se (P4).
+ */
+export function linkoviPoruke(
+  polja: UpitPolja,
+  kontakt: { viber: string; whatsapp: string; email: string } = site.kontakt,
+): LinkoviPoruke {
+  const poruka = sastaviPoruku(polja);
+  return {
+    viber: viberHref(kontakt.viber, poruka),
+    whatsapp: whatsappHref(kontakt.whatsapp, poruka),
+    email: mailtoHref(kontakt.email, { subject: naslovPoruke(polja), body: poruka }),
+  };
+}
+
+/** Početni tekst polja „Deo“ za `/upit/?deo=<grupa>`: „Kočioni diskovi: “; nepoznat slug daje „“. */
+export function deoIzUpita(pretraga: string, delovi: Readonly<Record<string, string>>): string {
+  const slug = new URLSearchParams(pretraga).get("deo");
+  const naziv = slug && Object.hasOwn(delovi, slug) ? delovi[slug] : "";
+  return naziv ? `${naziv}: ` : "";
 }

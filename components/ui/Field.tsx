@@ -1,6 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
-import { CaretDownIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
-
+import { CaretDownIcon, WarningCircleIcon } from "@/components/ui/ikone";
 import { UPIT_POLJA } from "@/content/upit";
 import { cn } from "@/lib/cn";
 

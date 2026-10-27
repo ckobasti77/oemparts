@@ -298,3 +298,128 @@ Svaki korak dopisuje svoju sekciju na kraj, sa svojim ODLUKAMA i BLOKADAMA.
 - **Klik provera:** kartica na `/asortiman/` (npr. „Kočione pločice“) treba da vodi na članak na strani sistema, ispod header-a. „Pitajte za ovaj deo“ vodi na `/upit/?deo=…`; polje popunjava K05.
 - **`/vozila/`:** spisak modela je nepromenjen iz plana i čeka potvrdu klijenta.
 - **Lepljiv panel** na strani sistema se vidi od 1280 px; na 1024 su dugmad ispod uvoda.
+
+## K05 — Upit po šasiji, kontakt i saradnja   (2026-10-27 21:59)
+**Fajlovi:**
+- Novo:
+  - `components/sections/upit/{UpitForma,VinPomoc}.tsx`;
+  - `components/sections/kontakt/MapaNaKlik.tsx`;
+  - `components/layout/ChannelList.tsx`, `components/sections/Koraci.tsx`;
+  - `components/ui/ikone.tsx`.
+- Izmenjeno:
+  - `app/{upit,kontakt,saradnja}/page.tsx`;
+  - `components/layout/PageHeader.tsx` (opciona slika desno), `components/ui/{Field,Button}.tsx` (ikone iz `ikone.tsx`);
+  - `content/{upit,stranice,saradnja,pocetna}.ts`;
+  - `lib/{links,upit}.ts`;
+  - `tests/unit/{upit,links}.test.ts`;
+  - `docs/PODACI-OD-KLIJENTA.md`.
+- Snimci `docs/oemparts/snimci/K05-*`: `upit-prazna`, `upit-greske`, `upit-popunjena`, `kontakt`, `saradnja`, svaki na 390 i 1440.
+
+**Šta je urađeno:**
+- **`/upit/`** ima formu koja sastavlja poruku u pregledaču (P2). Polja su raspoređena u tri grupe:
+  - **Vozilo:** broj šasije sa brojačem „n / 17“, a marka (select: 5 marki i „Druga marka“) i model (`datalist` modela izabrane marke) služe kad broja šasije nema;
+  - **Šta vam treba:** deo ili opis kvara i napomena, obe sa brojačem do 500;
+  - **Kontakt:** ime i telefon.
+- **Provera** važi samo za popunjeno polje: radi na izlazu iz polja i na „Sastavi poruku“. Posle toga se greška menja dok se kuca. Pravila su iz plana K01 §7.3.
+  - Kad provera ne prođe, fokus ide na sažetak „Proverite označena polja“. Sažetak sadrži linkove koji vode na polja.
+  - Polja nose `aria-invalid`, a `aria-describedby` pokazuje na grešku i pomoć.
+  - Kad broj šasije ima I, O ili Q i postoji ispravan predlog, ispod polja se pojavljuje dugme „Upiši …“.
+- **Pregled „Vaša poruka“** se otvara kad provera prođe, a fokus prelazi na njegov naslov.
+  - U pregledu su dugmad „Pošalji na Viber“, „Pošalji na WhatsApp“ i „Pošalji mejlom“, samo za kanale koji imaju vrednost. Uz njih je „Kopiraj poruku“, sa statusom u `role="status"`.
+  - Iznad dugmadi piše šta se dešava kad se pošalje. Na strani je i blok „Sajt ništa ne šalje i ne čuva“.
+  - Izmena polja odmah menja pregled i linkove. Kad polje postane neispravno, pregled se skriva dok se poruka ponovo ne sastavi.
+- **Pomoć za broj šasije** ima dva crteža: saobraćajnu dozvolu sa poljem E i ugao vetrobrana. Uz njih je tekst.
+  - Od 1024 px stoji u lepljivoj desnoj koloni, zajedno sa „Šta se dešava posle“.
+  - Na telefonu je `<details>` odmah ispod polja.
+- **Ostalo na `/upit/`:**
+  - Bez JS-a dugme je onemogućeno, pa forma nikad ne šalje podatke u URL. `<noscript>` tada nudi kanale.
+  - `?deo=<grupa>` (link „Pitajte za ovaj deo“ iz K04) popunjava „Deo“ nazivom grupe.
+- **`/kontakt/`:**
+  - Kanali su redovi jednog panela. Svaki red visok je 64 px i ceo je link (ikona, naziv, vrednost, → ili ↗). Desno je panel upita sa primarnim „Pošaljite upit“.
+  - Ispod su radno vreme, adresa sa mapom na klik (P3) i podaci firme, ali samo ako postoje (P4). Sada su prazni, pa se ne prikazuju.
+  - Meta opis pominje samo kanale koji postoje.
+- **`/saradnja/`:**
+  - Uvod sadrži „Pošaljite upit“ i „Pozovite“, a dekorativni render menjača stoji desno ili ispod.
+  - Koraci: upit → ponuda → preuzimanje ili slanje → račun.
+  - Liste „Šta da nam pošaljete“ i „Kome je namenjeno“, četiri česta pitanja (i FAQPage JSON-LD) i CtaBand.
+  - Nema popusta ni rokova; te stavke su u PODACI.
+- **Provereno u pregledaču** (dev i statički izvoz na 3241):
+  - **Tastatura:** forma radi samo tastaturom. Tab ide redom kroz polja do dugmeta, Enter sastavlja poruku, Tab i Enter u sažetku vode na polje, a „Kopiraj poruku“ radi na Enter.
+  - **Raspored:** na 390 i 1440 px nema horizontalnog skrola. Posle skrola nijedan reveal nije `pending`, a konzola je bez grešaka.
+  - **Mapa:** pre klika nema nijednog zahteva ka Google-u. To je provereno sa privremenom adresom, uz skrol do dna. Posle klika (Enter) iframe se učitava i dobija fokus. `site.ts` je posle provere vraćen; `git diff` je prazan.
+
+**ODLUKE:**
+- **Viber link nosi poruku u parametru `&draft=`, a poruka se pri kliku i kopira.** Prihvatanje K05 traži da i Viber link nosi celu poruku. Viber za `viber://chat?number=` ne dokumentuje unapred upisan tekst (dokumentovan je samo za botove, `viber://pa?…&text=`), a nepoznat parametar aplikacija samo zanemari. Zato kopiranje iz K01-08 ostaje kao rezerva. Napomena posle klika glasi: „Poruka je kopirana. Ako se ne pojavi u Viberu, nalepite je u razgovor.“ Stavka je u PODACI (Viber Business i provera na telefonu).
+- **Greška se ne prikazuje na izlazu iz praznog polja.** Prazna obavezna polja javlja tek „Sastavi poruku“, da se greške ne pale dok se samo prolazi tabom (plan: „provera na blur i na Sastavi“).
+- **Ikone forme crta server i šalje ih kao props**, isto kao logo (K01-24). Phosphor ikona nosi svih šest težina. `Field` i `Button` sada uzimaju tri ikone (strelica nadole, upozorenje, ↗) iz `components/ui/ikone.tsx`: iste Phosphor putanje (MIT), samo težina „regular“. Izgled se ne menja.
+  - Početni JS za `/upit/` je pao sa 150,5 na 145,9 KB gzip.
+  - **Budžet od 145 KB je i dalje premašen za 0,9 KB, samo na `/upit/`** (upozorenje u `check:site`, ne greška). Ostatak je stvaran kod forme (provera, sastav, linkovi, kopiranje), a ostale strane imaju 138,8–142,5 KB. K07 meri Lighthouse.
+- **Tekstovi:**
+  - `UPIT_GRESKE.telefonNeispravan` je skraćen na „Broj telefona nije ispravan. Proverite pozivni broj i cifre.“ Primer „06x xxx xxxx“ već stoji u pomoći odmah ispod, pa se ne ponavlja.
+  - Dodato je `imeKratko`: ime od jednog znaka dobija „Ime je prekratko…“ umesto „Upišite ime…“.
+  - Predlog za broj šasije glasi „Da li ste mislili na …?“, a test je usklađen.
+- **Lektura posle kritike:**
+  - „Šta nam pošaljite“ → „Šta da nam pošaljete“.
+  - Koraci saradnje su sada u nesvršenom vidu („Šaljete…“, „Proveravamo delove i javljamo vam ponudu.“), kao „Šta se dešava posle“.
+  - „auto-mehaničar“ i „auto-servis“ pišu se sastavljeno (Pravopis: prefiksoid „auto-“). Ispravljeno je i na početnoj (`content/pocetna.ts`, 3 mesta), da tekst bude dosledan. Dev-only `/stil/` nije diran.
+- **Bez narandžaste kao ukrasa:** štikle u listi saradnje su `ink-2`, a mesto broja na crtežu VIN-a istaknuto je svetlom ivicom, ne narandžastom.
+- **Ikone „Kome je namenjeno“:** garaža (autoservisi), ključ (automehaničari), kamion (firme sa vozilima).
+- **Uvod i meta opis `/upit/` i meta opis `/kontakt/`** sada koriste `popuniKanale`, kako je K03 tražio. Rečenica o KP-u se dodaje samo kad KP link postoji.
+- **`PageHeader` je dobio opcionu `slika`.** Saradnja ima render u okviru 4:3, da slika ne bude viša od teksta. Na telefonu je visina okvira do 224 px.
+- **`Koraci` je nova opšta komponenta**, istog oblika kao „Kako kupiti“ na početnoj. Početna nije menjana, a K06 je može koristiti na `/kako-kupiti/`.
+- **Na `/kontakt/`, kad postoji adresa, adresa i mapa su levo**, a radno vreme i firma desno (`grid-rows-[auto_1fr]`). Na telefonu je redosled po planu: radno vreme → adresa i mapa → firma. U okviru mape adresa se ne ponavlja.
+- **Dodato je pitanje „Mogu li da pošaljem više delova odjednom?“** (plan dozvoljava 3–4). Stavka je u PODACI na potvrdu.
+- **Impeccable kritika:**
+  - Detektor nad izmenjenim fajlovima je našao 3 savetodavna nalaza (veličine teksta u SVG-u). Ispravljeno je na SVG `fontSize`, a zatim su natpisi premešteni u HTML. Sada je 0 nalaza.
+  - Pregled dizajna (radnik, Sonnet) je dao 6 nalaza i lekturu. Primenjeno: dugme za predlog VIN-a, razmak „Ako nemate broj šasije…“, brojač napomene, čitljivi natpisi crteža, `overflow-wrap` za dug mejl u redu kanala, poruke grešaka, lektura i ikone.
+  - Odbijeno je preimenovanje dugmadi u množinu („Pošaljite na Viber“). Oznake „Pošalji na Viber“, „Pošalji na WhatsApp“, „Pošalji mejlom“ i „Kopiraj poruku“ zadaje zadatak K05 i plan §7.5. Naslov iznad njih je „Izaberite aplikaciju“, da se ne sudara sa njima.
+- **Procesi:** dev i preview server ovog koraka su posle `TaskStop` ostavili živ node proces (npm omotač je ugašen, dete nije). Pre gašenja proveren je tačan PID: komanda `next dev --port 3240` iz ovog foldera i `node scripts/serve-out.mjs --port 3241`. Zatim su ugašeni sa `taskkill /T`. Playwright MCP server pokreće okruženje (isto kao u K04), pa ga korak ne gasi; pregledač je zatvoren.
+  - Završna provera procesa (posle svih provera): portovi 3240 i 3241 su slobodni i nijedan `next`, `serve-out`, `vitest` ni build proces ovog koraka ne radi.
+  - Jedini živ node proces je `@playwright/mcp@0.0.83 --output-dir docs/oemparts/snimci` (PID 12508 i 26168). Lanac roditelja je `node …/@playwright/mcp/cli.js` (26168) ← `cmd /c playwright-mcp` (17680) ← `npx -y @playwright/mcp@0.0.83` (12508) ← `cmd /c npx …` (22836) ← `claude.exe -p … --permission-mode auto` (25304) ← `cmd /c logs/K05_goal_1.cmd` (17504) ← `nocni-run.ps1` (5592). Dakle, pokrenula ga je sama Claude Code sesija runnera iz MCP konfiguracije, a ne komanda ovog koraka, i gasi se kad se sesija završi.
+  - U K04 je ručno gašenje istog servera dva puta odbila zaštita okruženja.
+
+**Prihvatanje, izmereno** (statički izvoz na 3241, Playwright, samo tastatura, 390 i 1440 px):
+- **Forma radi samo tastaturom.**
+  - Tab ide od vrha strane: skip link → header → mrvica → broj šasije → (na 390 „Gde je broj šasije?“, Enter je otvara) → marka (strelica nadole bira „Volkswagen“) → model → deo → napomena → ime → telefon → „Sastavi poruku“.
+  - Enter sastavlja poruku, a fokus prelazi na „Vaša poruka“. Tab zatim ide na „Pošalji na Viber“, „Pošalji na WhatsApp“, „Pošalji mejlom“ i „Kopiraj poruku“.
+  - Enter na „Kopiraj poruku“ daje status „Poruka je kopirana.“, a `href` mejla sadrži celu poruku (sa dijakritikom).
+  - Na svakom koraku je vidljiv fokus prsten (outline ≥ 2 px).
+  - Neispravan unos (Enter u polju) šalje fokus na sažetak. Tab i Enter na linku u sažetku vode fokus na polje.
+  - Polja sa greškom nose `aria-invalid="true"`, a `aria-describedby` pokazuje na grešku i pomoć (provereno za VIN, deo, ime i telefon).
+  - „Prikaži mapu“ na `/kontakt/` radi na Enter, a fokus prelazi na iframe.
+- **Linkovi za Viber, WhatsApp i mejl nose celu poruku, ispravno enkodovanu:** pokriva `tests/unit/upit.test.ts` („linkoviPoruke: svaki link nosi celu poruku, ispravno kodiranu“), a u pregledaču je provereno i na izvozu.
+- **Pre klika na mapu nema mrežnih zahteva ka Google-u:** provereno sa privremenom adresom (0 zahteva pre klika, iframe posle klika). Na `/kontakt/` sa pravim (praznim) podacima mapa se ne prikazuje i nema zahteva.
+- **Provere prolaze; sekcija K05 je ovde:** typecheck ✓ · lint ✓ · test 133/133 ✓ · build ✓ · check:site ✓ (0 grešaka).
+
+**BLOKADA:** uslov „nijedan proces koji je korak pokrenuo ne ostaje upaljen“ nije potpuno ispunjen, iz istog razloga kao u K04.
+- **Šta i dalje radi:** samo Playwright MCP server, `npx -y @playwright/mcp@0.0.83 --headless --isolated --output-dir docs/oemparts/snimci` (PID 12508 i 26168).
+- **Ko ga je pokrenuo:** `claude.exe -p … --permission-mode auto` (PID 25304), dete `cmd /c logs/K05_goal_1.cmd` (17504) ← `nocni-run.ps1` (5592). Tri puta je provereno preko `Win32_Process`. Sesija ga podiže iz MCP konfiguracije runnera kad se prvi put koristi pregledač. Nijedna komanda ovog koraka ga nije pokrenula.
+- **Šta je urađeno:** pregledač je zatvoren (`browser_close`). Server za pregled (3241) i dev server (3240) koje je korak pokrenuo ugašeni su posle provere tačnog PID-a, i portovi su slobodni.
+- **Pokušaj gašenja:** `taskkill /PID 12508 /T /F` i `taskkill /PID 26168 /F`. Odbijen je, tačna poruka: „Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Interfere With Workloads]“.
+- **Šta nije rađeno:** posle odbijanja nema daljih pokušaja ni zaobilaženja. Ponavljanje odbijene radnje ili drugi način gašenja procesa okruženja zaobišli bi zaštitu, a to pravila runa ne dozvoljavaju („Blokada je ispravan ishod, hak nije“). Zato je uslov nemoguć bez dozvole vlasnika.
+- **Rešenje:** MCP server se gasi kad se završi sesija koju pokreće runner. Ako korak treba sam da ga gasi, Jovan dodaje dozvolu za `taskkill` tog procesa u podešavanja, ili runner gasi MCP posle koraka.
+
+**Novi paketi:** nema.
+
+**Testovi** (ukupno 133, bilo je 104):
+- `upit.test.ts`:
+  - `linkoviPoruke`, za 4 skupa polja (sva polja, dijakritika i posebni znaci sa više redova, samo obavezna, bez broja šasije): Viber `draft`, WhatsApp `text` i mejl `subject` i `body` dekodiraju se tačno u poruku i naslov. Mejl ima CRLF, a kodirani deo sadrži samo dozvoljene znake;
+  - UTF-8 dijakritika (Đ, Š, ć, Ž, „ “) i `&` kodirani su u svakom linku;
+  - kanal bez vrednosti daje `null`, a podrazumevani kontakt dolazi iz `site.ts`;
+  - prazna forma, polja samo sa razmacima i sažimanje praznih redova;
+  - 11 slučajeva provere broja šasije: mala slova, razmaci, crtice, dužina 16 i 18, Q, I i O sa predlogom i bez njega, Č i `/`;
+  - vozilo bez broja šasije i „Druga marka“; ime od jednog znaka;
+  - `deoIzUpita`: poznata grupa; nepoznata, prazna, `__proto__`, `toString` i `<script>`.
+- `links.test.ts`: Viber sa `draft` (dijakritika, novi red, `& # + % ?`); kodiranje adrese u mapi i u linku ka mapi.
+
+**Rezultat provere:**
+- typecheck ✓ · lint ✓ · test 133/133 ✓ · build ✓;
+- check:site ✓: 0 grešaka i 7 upozorenja (6 P4 i `/upit/` 145,9 KB, vidi ODLUKE).
+- Dev i preview serveri su ugašeni, pa su portovi 3240 i 3241 slobodni. Pregledač je zatvoren.
+- Artefakti Playwright MCP-a (`console-*.log`, `page-*.yml`) premešteni su iz `snimci/` u `.nocni-run/oemparts/tmp/mcp-k05/`.
+
+**Za Jovana ujutru:**
+- **Na pravom telefonu** (Android i iPhone) proveriti „Pošalji na Viber“: da li se poruka pojavi u razgovoru (`draft`) ili je treba nalepiti. Proveriti i „Pošalji na WhatsApp“ i „Pošalji mejlom“ (dijakritika i redovi).
+- **Snimci** su `docs/oemparts/snimci/K05-*.png`. Na snimcima od 390 px donja traka je pomerena na dno strane.
+- **`/kontakt/`** je sada kratak, jer adresa, radno vreme i firma čekaju klijenta. Kad se upišu u `content/site.ts`, pojavljuju se blokovi i mapa na klik.
+- **PODACI-OD-KLIJENTA** sada ima nove stavke saradnje: rabat, rokovi, plaćanje, slanje, račun na firmu i lista delova.
