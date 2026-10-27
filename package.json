@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node -e \"console.log('Testovi jos ne postoje - pravi ih korak K02.')\"",
+    "check:site": "node -e \"console.log('check:site jos ne postoji - pravi ga korak K02.')\""
   },
   "dependencies": {
     "next": "16.4.3",

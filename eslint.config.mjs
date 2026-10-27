@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Agent tooling, the night-run kit and reference copies from the old site (not project source).
+    ".claude/**",
+    ".nocni-run/**",
+    "_izvor/**",
   ]),
 ]);
 
