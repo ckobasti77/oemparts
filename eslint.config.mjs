@@ -17,6 +17,24 @@ const eslintConfig = defineConfig([
     ".nocni-run/**",
     "_izvor/**",
   ]),
+  // GSAP samo kroz zajednički primitiv u components/motion/ (pravila runa OEMPARTS).
+  {
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["components/motion/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["gsap", "gsap/*", "@gsap/*"],
+              message: "GSAP samo kroz components/motion/ (pravila runa).",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;
