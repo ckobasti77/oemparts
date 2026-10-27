@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# reference material from the old site and vendored agent skills (not project source)
+/_izvor/
+/.claude/skills/
+
+# nocni run oemparts (logovi i stanje runnera)
+.nocni-run/oemparts/logs/
+.nocni-run/oemparts/tmp/
+.nocni-run/oemparts/state.json
+.nocni-run/oemparts/state.json.tmp
+.nocni-run/oemparts/state.bad.json
+.nocni-run/oemparts/STOP
+.nocni-run/oemparts/baseline.txt
+.nocni-run/oemparts/mcp.json

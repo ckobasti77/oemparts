@@ -1,0 +1,39 @@
+{
+  "name": "OEMPARTS",
+  "slug": "oemparts",
+  "branch": "oemparts-run",
+  "owner": "Jovan",
+  "lang": "sr",
+  "defaultModel": "claude-opus-5-5",
+  "planDoc": "docs/OEMPARTS-PLAN.md",
+  "progressDoc": "docs/OEMPARTS-PROGRESS.md",
+  "plansDir": "docs/oemparts/planovi",
+  "screenshotsDir": "docs/oemparts/snimci",
+  "gates": [
+    { "name": "typecheck", "cmd": "npm run typecheck", "timeoutMin": 15 },
+    { "name": "lint", "cmd": "npm run lint", "timeoutMin": 15 },
+    { "name": "test", "cmd": "npm run test", "timeoutMin": 20 },
+    { "name": "build", "cmd": "npm run build", "timeoutMin": 25, "agent": false },
+    { "name": "site", "cmd": "npm run check:site", "timeoutMin": 10, "agent": false }
+  ],
+  "maxFixAttempts": 2,
+  "budgetUsd": 0,
+  "deny": [
+    "Bash(vercel:*)",
+    "Bash(npx vercel:*)",
+    "Bash(netlify:*)",
+    "Bash(npx netlify:*)",
+    "Bash(wrangler:*)",
+    "Bash(npx wrangler:*)",
+    "Bash(npx convex:*)",
+    "Bash(gh:*)",
+    "Bash(scp:*)",
+    "Bash(ftp:*)"
+  ],
+  "commitExclude": [],
+  "ownPaths": [],
+  "mcp": { "playwright": true, "playwrightPackage": "@playwright/mcp@0.0.83" },
+  "env": {},
+  "devPorts": [3240, 3241, 3000, 3001],
+  "commitTrailer": "Co-Authored-By: Claude <noreply@anthropic.com>"
+}

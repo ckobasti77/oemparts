@@ -1,0 +1,10 @@
+[
+  { "id": "K01", "title": "Plan: arhitektura, dizajn i sadržaj", "model": "claude-opus-5-5", "effort": "max", "mode": "plan", "session": "nova", "resumeFrom": null, "timeoutMin": 120 },
+  { "id": "K02", "title": "Temelj: statički Next, GSAP, tokeni, brend, sadržaj, provere", "model": "claude-opus-5-5", "effort": "xhigh", "mode": "goal", "session": "ista", "resumeFrom": "K01", "timeoutMin": 240 },
+  { "id": "K03", "title": "Ljuska i početna strana", "model": "claude-opus-5-5", "effort": "xhigh", "mode": "goal", "session": "nova", "resumeFrom": null, "timeoutMin": 240 },
+  { "id": "K04", "title": "Asortiman, sistemi, marke i modeli", "model": "claude-opus-5-5", "effort": "xhigh", "mode": "goal", "session": "nova", "resumeFrom": null, "timeoutMin": 210 },
+  { "id": "K05", "title": "Upit po šasiji, kontakt i saradnja", "model": "claude-opus-5-5", "effort": "xhigh", "mode": "goal", "session": "nova", "resumeFrom": null, "timeoutMin": 210 },
+  { "id": "K06", "title": "O nama, kako kupiti, pravne strane i SEO", "model": "claude-sonnet-5-5", "effort": "high", "mode": "goal", "session": "nova", "resumeFrom": null, "timeoutMin": 180 },
+  { "id": "K07", "title": "Pokret, telefon, pristupačnost, brzina i e2e", "model": "claude-opus-5-5", "effort": "xhigh", "mode": "goal", "session": "nova", "resumeFrom": null, "timeoutMin": 240 },
+  { "id": "K08", "title": "Revizija, izveštaj i predaja", "model": "claude-opus-5-5", "effort": "max", "mode": "goal", "session": "nova", "resumeFrom": null, "timeoutMin": 240 }
+]
