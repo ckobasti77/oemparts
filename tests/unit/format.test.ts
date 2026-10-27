@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { brojGrupa } from "@/lib/asortiman";
-import { formatRadnoVreme, mnozina, typographer } from "@/lib/format";
+import { adresaTekst, formatRadnoVreme, mnozina, typographer } from "@/lib/format";
 import { staggerDelayMs } from "@/lib/motion";
 
 describe("množina", () => {
@@ -50,5 +50,13 @@ describe("stagger", () => {
     expect([0, 1, 2, 3].map((i) => staggerDelayMs(i, 4))).toEqual([0, 60, 120, 180]);
     expect(staggerDelayMs(12, 13)).toBe(180);
     expect(staggerDelayMs(0, 1)).toBe(0);
+  });
+});
+
+describe("adresaTekst", () => {
+  it("ulica, poštanski broj i mesto u jednom redu; prazno kad nije uneto", () => {
+    expect(adresaTekst({ ulica: "Ulica 1", postanskiBroj: "11000", mesto: "Beograd" })).toBe("Ulica 1, 11000 Beograd");
+    expect(adresaTekst({ ulica: "", postanskiBroj: "", mesto: "Beograd" })).toBe("Beograd");
+    expect(adresaTekst({ ulica: " ", postanskiBroj: "", mesto: "" })).toBe("");
   });
 });

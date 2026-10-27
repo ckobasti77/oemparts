@@ -5,7 +5,8 @@
  *
  * Greške (exit 1): rute, title/description/canonical/h1, interni linkovi i resursi, sidra,
  * „lorem“/„TODO“/`undefined` u vidljivom tekstu, slike bez alt-a ili dimenzija, tuđi domeni za
- * resurse, target=_blank bez rel, dev-only /stil/ sa sadržajem ili bez noindex.
+ * resurse, target=_blank bez rel, dev-only /stil/ sa sadržajem ili bez noindex, segmentni prefetch
+ * fajlovi u podfolderima (Windows izvoz bez scripts/fix-export-segments.mjs).
  * Upozorenja: privremene vrednosti (P4) i veličine po strani.
  *
  * content/site.ts i content/asortiman.ts se učitavaju direktno (Node ≥ 22.18 skida tipove).
@@ -135,6 +136,20 @@ async function main() {
   const sistemiOcek = SISTEMI.map((s) => s.slug).sort();
   if (JSON.stringify(sistemiOut) !== JSON.stringify(sistemiOcek))
     greska("/asortiman/", `sistemi u out/ (${sistemiOut.length}) ne odgovaraju sadržaju (${sistemiOcek.length})`);
+
+  // Segmentni prefetch fajlovi moraju imati ravno ime (`__next.upit.__PAGE__.txt`), kako ih klijent
+  // traži; podfolder `__next.*` znači da scripts/fix-export-segments.mjs nije pokrenut (Windows).
+  const segmentniFolderi = [];
+  const traziSegmente = (dir) => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      if (!e.isDirectory() || e.name === "_next") continue;
+      if (e.name.startsWith("__next.")) segmentniFolderi.push(path.relative(OUT, path.join(dir, e.name)));
+      else traziSegmente(path.join(dir, e.name));
+    }
+  };
+  traziSegmente(OUT);
+  if (segmentniFolderi.length)
+    greska("/", `segmentni prefetch fajlovi u podfolderima (${segmentniFolderi.length}, npr. ${segmentniFolderi[0]}); pokreni npm run build`);
 
   const fajlovi = htmlFajlovi(OUT);
   const htmlPoRuti = new Map(fajlovi.map((f) => [rutaFajla(f), readFileSync(f, "utf8")]));

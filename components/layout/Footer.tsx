@@ -1,36 +1,38 @@
 import Link from "next/link";
+import { ArrowUpRightIcon, ClockIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { IKONA_KANALA } from "@/components/layout/ContactChannels";
 import { ButtonLink } from "@/components/ui/Button";
 import { SISTEMI } from "@/content/asortiman";
 import { ARIA, CTA, FOOTER, MENI, PRAVNO } from "@/content/navigacija";
 import { site } from "@/content/site";
-import { formatRadnoVreme } from "@/lib/format";
+import { adresaTekst, formatRadnoVreme } from "@/lib/format";
 import { kanali, kpHref } from "@/lib/links";
 import { RUTE, sistemRuta } from "@/lib/routes";
 
 const linkKlasa = "inline-flex min-h-11 items-center text-ink-2 transition-control hover:text-ink-1";
 
 /**
- * Footer (osnova iz K02, K03 dovršava): logo, linkovi na sve strane, kanali sa vrednošću,
- * podaci firme samo ako postoje, napomena o žigovima (P6). Traka dodiruje ivice ekrana.
+ * Footer (plan K01 §4.0): logo, rečenica i KP; asortiman i informacije; kontakt (samo kanali sa
+ * vrednošću, radno vreme i adresa ako postoje); podaci firme ako postoje (P4); pravne strane i
+ * napomena o žigovima (P6). Traka dodiruje ivice ekrana, pa nema radijus. Nije meta reveal-a.
  */
 export function Footer() {
   const kp = kpHref();
   const lista = kanali().filter((k) => k.kanal !== "kp");
   const radnoVreme = formatRadnoVreme(site.radnoVreme);
-  const adresa = [site.adresa.ulica, [site.adresa.postanskiBroj, site.adresa.mesto].filter(Boolean).join(" ")]
-    .filter(Boolean)
-    .join(", ");
+  const adresa = adresaTekst(site.adresa);
   const firma = [
     site.firma.naziv,
-    site.firma.pib && `PIB ${site.firma.pib}`,
-    site.firma.mb && `MB ${site.firma.mb}`,
+    site.firma.sediste,
+    site.firma.pib && `${FOOTER.pib} ${site.firma.pib}`,
+    site.firma.mb && `${FOOTER.mb} ${site.firma.mb}`,
   ].filter(Boolean);
+  const sistemi = [...SISTEMI].sort((a, b) => a.redosled - b.redosled);
   return (
-    <footer className="border-t border-line bg-bg-raised">
-      <div className="grid gap-10 px-page py-14 md:grid-cols-2 xl:grid-cols-[1.3fr_1fr_1fr_1.2fr] xl:gap-8">
-        <div className="flex flex-col items-start gap-5">
+    <footer className="border-t border-line bg-bg-raised print:hidden">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-10 px-page py-14 lg:grid-cols-[1.25fr_1fr_0.8fr_1.2fr] lg:gap-x-8 lg:py-16">
+        <div className="col-span-2 flex flex-col items-start gap-5 lg:col-span-1">
           <Link href={RUTE.pocetna} aria-label={ARIA.pocetnaLogo} className="inline-flex rounded-xs">
             {/* eslint-disable-next-line @next/next/no-img-element -- statičan SVG iz kita, keš između strana */}
             <img
@@ -40,20 +42,22 @@ export function Footer() {
               alt=""
               loading="lazy"
               decoding="async"
-              className="h-32 w-auto"
+              className="h-32 w-auto rounded-none"
             />
           </Link>
-          <p className="max-w-[40ch] type-body-s text-ink-2">{FOOTER.opis}</p>
+          <p className="max-w-[38ch] type-body-s text-ink-2">{FOOTER.opis}</p>
           {kp ? (
             <ButtonLink href={kp} variant="secondary">
               {CTA.kp}
             </ButtonLink>
           ) : null}
         </div>
-        <nav aria-label={FOOTER.asortiman}>
-          <h2 className="type-label text-ink-3">{FOOTER.asortiman}</h2>
+        <nav aria-labelledby="footer-asortiman">
+          <h2 id="footer-asortiman" className="type-label text-ink-3">
+            {FOOTER.asortiman}
+          </h2>
           <ul className="mt-3 type-body-s">
-            {SISTEMI.map((s) => (
+            {sistemi.map((s) => (
               <li key={s.slug}>
                 <Link href={sistemRuta(s.slug)} className={linkKlasa}>
                   {s.naziv}
@@ -62,8 +66,10 @@ export function Footer() {
             ))}
           </ul>
         </nav>
-        <nav aria-label={FOOTER.informacije}>
-          <h2 className="type-label text-ink-3">{FOOTER.informacije}</h2>
+        <nav aria-labelledby="footer-informacije">
+          <h2 id="footer-informacije" className="type-label text-ink-3">
+            {FOOTER.informacije}
+          </h2>
           <ul className="mt-3 type-body-s">
             {MENI.map((s) => (
               <li key={s.ruta}>
@@ -74,7 +80,7 @@ export function Footer() {
             ))}
           </ul>
         </nav>
-        <div>
+        <div className="col-span-2 lg:col-span-1">
           <h2 className="type-label text-ink-3">{FOOTER.kontakt}</h2>
           <ul className="mt-3 type-body-s">
             {lista.map((k) => {
@@ -89,27 +95,48 @@ export function Footer() {
                     <Ikona size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
                     <span>
                       {k.oznaka}
-                      {k.vrednost ? <span className="ml-2 text-ink-1">{k.vrednost}</span> : null}
+                      {k.vrednost ? <span className="ml-2 text-ink-1 tabular-nums">{k.vrednost}</span> : null}
                       {k.spoljni ? <span className="sr-only"> {ARIA.noviProzor}</span> : null}
                     </span>
+                    {k.spoljni ? <ArrowUpRightIcon size={14} aria-hidden="true" className="shrink-0 text-ink-3" /> : null}
                   </a>
                 </li>
               );
             })}
-            {radnoVreme ? <li className="py-2 text-ink-2">{radnoVreme}</li> : null}
-            {adresa ? <li className="py-2 text-ink-2">{adresa}</li> : null}
           </ul>
+          {radnoVreme || adresa ? (
+            <dl className="mt-3 flex flex-col gap-3 type-body-s text-ink-2">
+              {radnoVreme ? (
+                <div className="flex gap-3">
+                  <ClockIcon size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
+                  <div>
+                    <dt className="sr-only">{FOOTER.radnoVreme}</dt>
+                    <dd>{radnoVreme}</dd>
+                  </div>
+                </div>
+              ) : null}
+              {adresa ? (
+                <div className="flex gap-3">
+                  <MapPinIcon size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
+                  <div>
+                    <dt className="sr-only">{FOOTER.adresa}</dt>
+                    <dd>{adresa}</dd>
+                  </div>
+                </div>
+              ) : null}
+            </dl>
+          ) : null}
         </div>
       </div>
       <div className="flex flex-col gap-4 border-t border-line px-page py-6 type-caption font-normal text-ink-3 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
-        <div className="flex max-w-[90ch] flex-col gap-2">
+        <div className="flex max-w-[62ch] flex-col gap-2">
           <p>
             © {new Date().getFullYear()} {site.brend.ime}
             {firma.length ? ` · ${firma.join(" · ")}` : ""}
           </p>
           <p>{FOOTER.zigovi}</p>
         </div>
-        <nav aria-label={ARIA.pravno}>
+        <nav aria-label={ARIA.pravno} className="shrink-0">
           <ul className="flex flex-wrap gap-x-5">
             {PRAVNO.map((s) => (
               <li key={s.ruta}>

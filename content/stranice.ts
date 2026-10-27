@@ -52,6 +52,12 @@ export const greske = {
     naslov: "Stranica nije pronađena",
     tekst: "Adresa je možda pogrešno upisana ili je stranica premeštena.",
     mozdaTrazite: "Možda tražite:",
+    predlozi: [
+      { ruta: "asortiman", oznaka: "Asortiman" },
+      { ruta: "vozila", oznaka: "Marke i modeli" },
+      { ruta: "kontakt", oznaka: "Kontakt" },
+      { ruta: "kakoKupiti", oznaka: "Kako kupiti" },
+    ] as const,
   },
 };
 

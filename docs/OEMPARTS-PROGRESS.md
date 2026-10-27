@@ -95,3 +95,100 @@ Svaki korak dopisuje svoju sekciju na kraj, sa svojim ODLUKAMA i BLOKADAMA.
 - Pogledati `docs/oemparts/snimci/K02-stil-{390,1440}.png` (tokeni, dugmad, polja, kartice, logo).
 - U `docs/PODACI-OD-KLIJENTA.md` je spisak privremenih podataka i potvrda; najvažniji su telefon, mejl, KP link i domen.
 - Viber ne prima unapred upisan tekst (poruka se kopira); ako firma ima Viber Business nalog, može drugačije.
+
+## K03 — Ljuska i početna strana   (2026-10-27 20:32)
+**Fajlovi:**
+- Novo:
+  - `components/layout/{HeaderState,MobileMenu,BottomBar}.tsx`;
+  - `components/motion/{ScrollCrossfade.tsx,useSheetMotion.ts}`;
+  - `components/sections/SystemCard.tsx`;
+  - `components/sections/home/{Hero,HeroPicture,Marke,Sistemi,Zasto,KakoKupiti,Saradnja,Upit,Prodavnica,Kontakt}.tsx`;
+  - `scripts/fix-export-segments.mjs`.
+- Izmenjeno:
+  - `app/{layout,page,not-found}.tsx`, `app/globals.css`;
+  - `components/layout/{Header,Footer}.tsx`;
+  - `content/{navigacija,pocetna,stranice}.ts`, `lib/{links,format}.ts`;
+  - `package.json` (`build`), `scripts/check-site.mjs`;
+  - `tests/unit/{links,format}.test.ts`.
+- Snimci `docs/oemparts/snimci/K03-*`:
+  - `pocetna-{390,1440}`, `header-sazet-{390,1440}`, `meni-{390,1024}`, `footer-{390,1440}`, `404-{390,1440}`.
+
+**Šta je urađeno:**
+- **Ljuska.** `layout.tsx` ima `lang="sr-Latn"`, fontove, skip link, sentinel za header, header, `<main>`, footer, donju traku i `RevealEngine`.
+  - `data-bottom-bar` na `<html>` postavlja server, i to samo kad traka ima bar jedan kanal, pa traka nikad ne pokriva sadržaj (`padding-bottom` na `body`).
+- **Header.** Sticky je, a visina se ne menja.
+  - Na vrhu je providan. Posle 24 px skrola dobija podlogu (`bg-raised` 92 % + blur) i logo se blago smanji. To radi IO na sentinelu i CSS, bez GSAP-a i bez scroll listenera.
+  - Raspored po širini: od 1280 px navigacija; telefon kao tekst od 1440, kao ikona od 1024; KP primarno dugme od 1024; „Meni“ ispod 1280.
+- **Meni.** Native `<dialog>` + `showModal()`, ceo ekran ispod 768 px, panel desno (r 20) od 768 px.
+  - Fokus ide na „Zatvori“, Tab/Shift+Tab kruže u panelu, Escape zatvara sa izlaznom animacijom, a fokus se vraća na „Meni“.
+  - Skrol strane je zaključan (`html.menu-open`, `scrollbar-gutter: stable`).
+  - Meni zatvaraju klik na pozadinu, klik na link, promena strane i širina od 1280 px.
+  - Pokret (`useSheetMotion`): panel −8 px → 0 i stavke sa stagger-om; pod reduced motion samo opacity.
+  - Logo, linkovi i ikone dolaze sa servera kao props/children (K01-24).
+- **Donja traka** (< 1024 px): Pozovite · Viber · KupujemProdajem, samo kanali sa vrednošću, neutralne boje.
+- **Footer.**
+  - logo, rečenica i KP (sekundarno);
+  - Asortiman i Informacije (na telefonu dve kolone);
+  - Kontakt: kanali sa vrednošću, radno vreme i adresa samo ako postoje;
+  - firma (naziv, sedište, PIB, MB) samo ako postoji;
+  - žigovi i pravne strane.
+- **404:** naslov, rečenica, „Pošaljite upit“ (primarno) i „Na početnu“, čipovi „Možda tražite“ i dekorativni render od 1024 px. `noindex`, status 404 u pregledu.
+- **Početna:** svih 9 sekcija iz plana §4.1, sa tekstovima iz `content/pocetna.ts` i pozadinama po planu.
+  - Hero: render auta sa pretapanjem sklopljen → rasklopljen na skrol (P9, `ScrollCrossfade` + lenji ScrollTrigger). Bez JS-a i pod reduced motion stoji sklopljen auto.
+  - LCP slika je uvek opacity 1, `fetchpriority="high"` i nije meta reveal-a (provereno: `car-assembled-1440.avif` / `-m-640.avif`, opacity 1).
+  - Sekcije 2–9 koriste `Reveal`/`RevealGroup` iz K02. Posle skrola do dna nijedan element nije `pending`.
+- **Provereno u pregledaču** (statički izvoz, 3241):
+  - 360/390/768/1024/1280/1440 px bez horizontalnog skrola;
+  - meni samo tastaturom;
+  - 0 grešaka u konzoli, prefetch segmenata 31/31 OK.
+
+**ODLUKE:**
+- **Kanali u rečenicama.** „Zašto (d)“ i tekst upita na početnoj sada imaju `{kanali}`, a `lib/links.ts` (`popuniKanale`) ga popunjava samo kanalima koji imaju vrednost.
+  - Primer: bez Vibera i WhatsApp-a piše „telefonom ili mejlom“.
+  - Proveren privremeno prazan Viber i WhatsApp: na početnoj i 404 nema ni linka ni reči „Viber“/„WhatsApp“; `site.ts` je vraćen.
+  - `/kontakt/` (K02) i dalje pominje kanale u meta opisu, a `content/upit.ts` u uvodu. **K05/K06** treba da koriste `popuniKanale` ili neutralan tekst.
+- **`SystemCard` je napravljen u K03** (`components/sections/SystemCard.tsx`), da ga K04 koristi i na asortimanu.
+  - Mreža odstupa od K01 §3.3 („3 kolone 768–1279“): 10 sistema u 3 kolone ostavlja siroče. Zato je 768–1279 mreža od 2 kolone sa vodoravnim karticama (render 112 px levo); < 768 su 2 kolone uspravno, ≥ 1280 5 kolona.
+- **Hero.**
+  - 1024–1279 px: render je pomeren udesno (`left: 14 %`, `right: −6 %`) jer su dugmad stajala preko prednjeg dela auta. Od 1280 px je preko cele širine, kao u planu.
+  - < 768 px: okvir je kvadratni sa renderom uz donju ivicu, umesto 4:5, jer je gornja petina rendera prazna.
+- **Marke** su linkovi u redu (`flex-wrap`), ne mreža 2 × N. „VOLKSWAGEN“ u display-m ne staje u ćeliju od 5 kolona; ovako je 390: „Volkswagen Audi / Škoda SEAT Cupra“.
+- **Upit:** 17 ćelija VIN-a su grupisane 3 + 6 + 8 (WMI/VDS/VIS, bez oznaka). Prigušene su i bez podloge, jer je kritika pokazala da liče na polje za unos.
+- **KP naslov** je ispod 640 px `6,3vw`. Reč „KupujemProdajem“ inače izlazi van ekrana na 360–390 px, a prelom unutar reči čita se kao dve reči.
+- **„Zašto“:** ikone bez pločica (plan: „ikona levo 24“), levi stub lepljiv od 1024 px.
+- **„Kako kupiti“:** na telefonu je link „Koraci i česta pitanja“ ispod koraka.
+- **Meni.** Logo u meniju je `<img>` SVG iz kita, a ne inline putanje, da se 12 KB putanja ne duplira u HTML-u i RSC-u. Ispod 360 px logo u meniju se ne prikazuje.
+- **Meni i fokus.** Tab kruži unutar panela (APG obrazac), ne izlazi na traku pregledača.
+- **Meni na tabletu.** Redovi navigacije su 48 px od 768 px (panel staje u 1024 × 768), a na telefonu 56 px.
+- **Donja traka.**
+  - Lista je najviše 36 rem i centrirana.
+  - Ispod 384 px oznake su 12 px, da „KupujemProdajem“ stane na 360 px.
+  - Telefon ima sr-only broj; KP sr-only „(otvara se u novom prozoru)“.
+- **`viewport-fit=cover` nije uključen.** `env(safe-area-inset-bottom)` je 0, a Safari sam drži sadržaj u bezbednoj zoni. Konzervativno, bez preklapanja sa zarezom u položenom položaju.
+- **Next 16.4.3 na Windows-u izvozi segmentne prefetch fajlove u podfoldere** (`out/upit/__next.upit/__PAGE__.txt`), a klijent traži `out/upit/__next.upit.__PAGE__.txt`.
+  - Uzrok: `path.relative` daje `\`, a `convertSegmentPathToStaticExportFilename` menja samo `/`.
+  - Posledica: 19 grešaka 404 u konzoli na početnoj (bitno za Lighthouse „najbolje prakse“).
+  - Rešenje:
+    - `scripts/fix-export-segments.mjs` posle `next build` (`npm run build`) ih premesti u ravna imena. Na Linux hostingu nema šta da radi.
+    - `check:site` sada javlja grešku ako podfolder `__next.*` ostane.
+- **Impeccable kritika** (dizajnerski pregled preko radnika + detektor):
+  - Detektor u kodu: 0 nalaza. U pregledaču:
+    - `line-length` u napomeni o žigovima: popravljeno, 62ch;
+    - `thin-border-wide-shadow` na `panel-raised` i panelu menija: lažno pozitivno, tokeni `--shadow-raised`/`--shadow-overlay` su iz K01 §3.5 (pomak + negativan raširen).
+  - Radnik je predložio i brisanje sekcija Saradnja i Kontakt na početnoj, novi tekst KP naslova i KP dugme kao sekundarno. To **nije** urađeno: sekcije, tekstovi i dva primarna dugmeta (upit i KP, različite oblasti) su zadati planom §4.1.
+
+**Novi paketi:** nema.
+
+**Testovi:**
+- `links.test.ts`: `brzeAkcije` (redosled, izostavljanje kanala bez vrednosti, prazna traka); `nabroj`, `kanaliTekstom` (padeži, samo postojeći kanali), `popuniKanale` (zamena i izostavljanje rečenice bez kanala).
+- `format.test.ts`: `adresaTekst`.
+- Ukupno 99 testova.
+
+**Rezultat provere:** typecheck ✓ · lint ✓ · test 99/99 ✓ · build ✓ (početni JS 138,8–139,5 KB gzip, budžet 145) · check:site ✓ (0 grešaka, 6 P4 upozorenja). Dev i preview serveri su ugašeni.
+
+**Za Jovana ujutru:**
+- `docs/oemparts/snimci/K03-pocetna-{390,1440}.png`. Na celoj strani donja traka je za snimak pomerena na dno; u stvarnosti je fiksna.
+- Na telefonu: otvaranje i zatvaranje menija, donja traka (Pozovite/Viber) i pretapanje auta na skrol.
+- Hero na 1024–1279 px: render je pomeren udesno i zadnji kraj auta je malo odsečen; proveriti da li se dopada.
+- U renderu auta se na tamnoj pozadini vide blage vertikalne trake (banding u izvornim slikama iz `_izvor`). Ako smeta, render treba ponovo izvesti sa ditheringom.
+- Ako se sajt gradi na Windows-u, `npm run build` već poravna prefetch fajlove. Ako se sajt gradi na drugom mestu (Netlify, Cloudflare, Linux), korak ne radi ništa.

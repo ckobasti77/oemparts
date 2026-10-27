@@ -107,6 +107,12 @@ export function formatRadnoVreme(redovi: readonly RadnoVreme[]): string {
   return tekst ? tekst.charAt(0).toUpperCase() + tekst.slice(1) : "";
 }
 
+/** Adresa u jednom redu: „Ulica 1, 11000 Beograd“; prazno kad nije uneta (P4). */
+export function adresaTekst(a: { ulica: string; postanskiBroj: string; mesto: string }): string {
+  const mesto = [a.postanskiBroj, a.mesto].map((d) => d.trim()).filter(Boolean).join(" ");
+  return [a.ulica.trim(), mesto].filter(Boolean).join(", ");
+}
+
 /** Srpska množina: mnozina(2, ["grupa", "grupe", "grupa"]) → „grupe“. */
 export function mnozina(n: number, oblici: readonly [string, string, string]): string {
   const d = Math.abs(n) % 10;

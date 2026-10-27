@@ -3,7 +3,7 @@
  * `null` i ne prikazuje se nigde (P4). Jedini izvor za header, meni, donju traku, footer i kontakt.
  */
 import { site } from "@/content/site";
-import { KANALI } from "@/content/navigacija";
+import { KANALI, KANALI_OBLICI } from "@/content/navigacija";
 import { formatPhone, normalizePhone } from "@/lib/format";
 
 /** Cifre E.164 broja bez znaka plus. */
@@ -117,4 +117,42 @@ export function kanali(kontakt: KontaktPodaci = site.kontakt, kpUrl: string = si
 /** Jedan kanal po vrsti ili `null`. */
 export function kanal(vrsta: VrstaKanala): Kanal | null {
   return kanali().find((k) => k.kanal === vrsta) ?? null;
+}
+
+/** Donja traka akcija (< 1024 px): telefon, Viber i KP, samo oni sa vrednošću (ODLUKA K01-21). */
+export function brzeAkcije(lista: readonly Kanal[] = kanali()): Kanal[] {
+  return lista.filter((k) => k.kanal === "telefon" || k.kanal === "viber" || k.kanal === "kp");
+}
+
+/** „a“, „a ili b“, „a, b ili c“. */
+export function nabroj(delovi: readonly string[], veznik = "ili"): string {
+  if (delovi.length <= 1) return delovi[0] ?? "";
+  return `${delovi.slice(0, -1).join(", ")} ${veznik} ${delovi[delovi.length - 1]}`;
+}
+
+export type KanalPoruke = keyof typeof KANALI_OBLICI;
+export type Padez = "instr" | "gen";
+
+/** Kanali koji imaju vrednost, kao reči u padežu: „telefonom, Viberom ili mejlom“. */
+export function kanaliTekstom(vrste: readonly KanalPoruke[], padez: Padez, lista: readonly Kanal[] = kanali()): string {
+  const postoje = new Set(lista.map((k) => k.kanal));
+  return nabroj(vrste.filter((v) => postoje.has(v)).map((v) => KANALI_OBLICI[v][padez]));
+}
+
+/**
+ * Popunjava `{kanali}` u tekstu iz content/ spiskom kanala koji postoje. Kad nijedan ne postoji,
+ * rečenica sa `{kanali}` se izostavlja, pa tekst nikad ne pominje kanal koji se ne prikazuje (P4).
+ */
+export function popuniKanale(
+  tekst: string,
+  vrste: readonly KanalPoruke[],
+  padez: Padez,
+  lista: readonly Kanal[] = kanali(),
+): string {
+  const spisak = kanaliTekstom(vrste, padez, lista);
+  if (spisak) return tekst.replaceAll("{kanali}", spisak);
+  return tekst
+    .split(/(?<=[.!?])\s+/)
+    .filter((recenica) => !recenica.includes("{kanali}"))
+    .join(" ");
 }

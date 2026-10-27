@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --port 3240",
-    "build": "next build",
+    "build": "next build && node scripts/fix-export-segments.mjs",
     "preview": "node scripts/serve-out.mjs --port 3241",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",

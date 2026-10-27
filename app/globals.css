@@ -186,8 +186,10 @@
     accent-color: var(--color-accent);
   }
 
+  /* Meni otvoren: strana se ne skroluje; prostor trake za skrol ostaje, pa se ništa ne pomera. */
   html.menu-open {
     overflow: hidden;
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -394,6 +396,11 @@
   height: var(--header-h);
 }
 
+/* Hero na ≥ 1024 px: ekran ispod header-a, najviše 16:9, najmanje 560 px. */
+@utility min-h-hero {
+  min-height: max(35rem, min(calc(100svh - var(--header-h)), 56.25vw));
+}
+
 /* ── Površine ──────────────────────────────────────────────────────────── */
 @utility panel {
   background-color: var(--color-surface-1);
@@ -494,5 +501,101 @@
   overscroll-behavior-x: contain;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* ── Ljuska (K03): header, donja traka, meni ───────────────────────────── */
+@layer components {
+  /* Header: visina se ne menja; na vrhu providan, posle 24 px skrola podloga i manji logo. */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+  }
+
+  .header-surface,
+  .bar-surface {
+    background-color: color-mix(in srgb, var(--color-bg-raised) 92%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-surface {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-bottom: 1px solid var(--color-line);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+
+  .site-header[data-condensed="true"] .header-surface {
+    opacity: 1;
+  }
+
+  .header-logo {
+    transform: scale(1.06);
+    transform-origin: left center;
+    transition: transform var(--dur-base) var(--ease-out);
+  }
+
+  .site-header[data-condensed="true"] .header-logo {
+    transform: none;
+  }
+
+  @media (scripting: none) {
+    .header-surface {
+      opacity: 1;
+    }
+    .header-logo {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .header-surface,
+    .bar-surface {
+      background-color: var(--color-bg-raised);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  /* Meni: <dialog> preko celog ekrana je providan nosač; panel je unutra (ceo ekran < 768, desno od 768). */
+  .menu-dialog {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    overflow: hidden;
+  }
+
+  .menu-dialog::backdrop {
+    background-color: var(--color-scrim);
+    opacity: 0;
+    transition: opacity var(--dur-base) linear;
+  }
+
+  .menu-dialog[open]::backdrop {
+    opacity: 1;
+  }
+
+  .menu-dialog[data-closing]::backdrop {
+    opacity: 0;
+    transition-duration: var(--dur-panel-exit);
+  }
+
+  @starting-style {
+    .menu-dialog[open]::backdrop {
+      opacity: 0;
+    }
   }
 }

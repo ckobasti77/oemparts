@@ -1,4 +1,7 @@
-/** Tekstovi početne strane (plan K01 §4.1). K03 ih koristi u sekcijama. */
+/**
+ * Tekstovi početne strane (plan K01 §4.1). `{kanali}` popunjava lib/links.ts `popuniKanale`
+ * spiskom kanala koji imaju vrednost (P4), pa rečenica nikad ne pominje kanal koji ne postoji.
+ */
 
 export const pocetna = {
   meta: {
@@ -39,7 +42,7 @@ export const pocetna = {
       },
       {
         naslov: "Kupovina kako vam odgovara",
-        tekst: "Preko naše prodavnice na KupujemProdajem ili direktno: telefonom, Viberom, WhatsApp-om ili mejlom.",
+        tekst: "Preko naše prodavnice na KupujemProdajem ili direktno: {kanali}.",
       },
     ],
   },
@@ -51,7 +54,7 @@ export const pocetna = {
   },
   upit: {
     naslov: "Ne znate tačan broj dela?",
-    tekst: "Pošaljite broj šasije i opišite šta vam treba. Sajt sastavi poruku, a vi je šaljete preko Vibera, WhatsApp-a ili mejla.",
+    tekst: "Pošaljite broj šasije i opišite šta vam treba. Sajt sastavi poruku, a vi je šaljete preko {kanali}.",
     napomena: "Broj šasije (VIN) ima 17 znakova. Nalazi se u saobraćajnoj dozvoli, u polju E.",
   },
   kp: {
@@ -62,4 +65,7 @@ export const pocetna = {
     naslov: "Kontakt",
     tekst: "Pozovite nas ili pišite. Za upit po delu pošaljite i broj šasije.",
   },
+  /** Kanali u rečenicama sa `{kanali}`: „Zašto“ (d) nabraja sve, upit samo one za slanje poruke. */
+  kanaliZasto: ["telefon", "viber", "whatsapp", "email"] as const,
+  kanaliUpit: ["viber", "whatsapp", "email"] as const,
 };

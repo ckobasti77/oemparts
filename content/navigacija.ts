@@ -65,6 +65,28 @@ export const KANALI = {
   kp: "KupujemProdajem",
 };
 
+/** Kanali u rečenici („…telefonom, Viberom ili mejlom“); spisak sklapa lib/links.ts. */
+export const KANALI_OBLICI = {
+  telefon: { instr: "telefonom", gen: "telefona" },
+  viber: { instr: "Viberom", gen: "Vibera" },
+  whatsapp: { instr: "WhatsApp-om", gen: "WhatsApp-a" },
+  email: { instr: "mejlom", gen: "mejla" },
+};
+
+/** Meni za telefon (< 1280 px). */
+export const MENI_TEKST = {
+  otvori: "Meni",
+  zatvori: "Zatvori",
+  pozovite: "Pozovite",
+};
+
+/** Donja traka akcija (< 1024 px): telefon, Viber i KP (ODLUKA K01-21). */
+export const BRZE_AKCIJE = {
+  telefon: "Pozovite",
+  viber: "Viber",
+  kp: "KupujemProdajem",
+};
+
 /** Tekstovi za pomoćne tehnologije i navigaciju. */
 export const ARIA = {
   preskoci: "Preskoči na sadržaj",
@@ -85,6 +107,10 @@ export const FOOTER = {
   asortiman: "Asortiman",
   informacije: "Informacije",
   kontakt: "Kontakt",
+  radnoVreme: "Radno vreme",
+  adresa: "Adresa",
+  pib: "PIB",
+  mb: "MB",
   zigovi:
     "Volkswagen, Audi, Škoda, SEAT i Cupra su žigovi svojih vlasnika. Nazive marki koristimo samo da označimo vozila kojima su delovi namenjeni; Euromotors Plus nije povezan sa proizvođačima vozila niti je njihov ovlašćeni zastupnik. KupujemProdajem je žig svog vlasnika.",
 };

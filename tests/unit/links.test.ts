@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
 
 import { formatPhone, normalizePhone } from "@/lib/format";
-import { kanali, kpHref, kpJeGenericki, mailtoHref, mapaEmbedSrc, telHref, viberHref, whatsappHref } from "@/lib/links";
+import {
+  brzeAkcije,
+  kanali,
+  kanaliTekstom,
+  kpHref,
+  kpJeGenericki,
+  mailtoHref,
+  mapaEmbedSrc,
+  nabroj,
+  popuniKanale,
+  telHref,
+  viberHref,
+  whatsappHref,
+} from "@/lib/links";
 
 const KONTAKT = {
   telefon: "+381 60 000 0000",
@@ -109,5 +122,44 @@ describe("kanali()", () => {
   it("WhatsApp i KP se otvaraju u novom prozoru", () => {
     const lista = kanali(KONTAKT, "https://www.kupujemprodajem.com/");
     expect(lista.filter((k) => k.spoljni).map((k) => k.kanal)).toEqual(["whatsapp", "kp"]);
+  });
+});
+
+describe("brzeAkcije (donja traka)", () => {
+  it("telefon, Viber i KP redom, bez WhatsApp-a i mejla", () => {
+    expect(brzeAkcije(kanali(KONTAKT)).map((k) => k.kanal)).toEqual(["telefon", "viber", "kp"]);
+  });
+
+  it("kanal bez vrednosti se izostavlja; bez ijednog traka je prazna", () => {
+    expect(brzeAkcije(kanali({ ...KONTAKT, viber: "" })).map((k) => k.kanal)).toEqual(["telefon", "kp"]);
+    expect(brzeAkcije(kanali({ telefon: "", viber: "", whatsapp: "", email: "" }, ""))).toEqual([]);
+  });
+});
+
+describe("kanali u rečenici", () => {
+  it("nabroj: jedan, dva i više delova", () => {
+    expect(nabroj([])).toBe("");
+    expect(nabroj(["a"])).toBe("a");
+    expect(nabroj(["a", "b"])).toBe("a ili b");
+    expect(nabroj(["a", "b", "c"])).toBe("a, b ili c");
+  });
+
+  it("samo kanali sa vrednošću, u traženom padežu", () => {
+    const sve = kanali(KONTAKT);
+    expect(kanaliTekstom(["telefon", "viber", "whatsapp", "email"], "instr", sve)).toBe(
+      "telefonom, Viberom, WhatsApp-om ili mejlom",
+    );
+    expect(kanaliTekstom(["viber", "whatsapp", "email"], "gen", sve)).toBe("Vibera, WhatsApp-a ili mejla");
+    const bezViber = kanali({ ...KONTAKT, viber: "", whatsapp: "" });
+    expect(kanaliTekstom(["telefon", "viber", "whatsapp", "email"], "instr", bezViber)).toBe("telefonom ili mejlom");
+  });
+
+  it("popuniKanale menja {kanali}, a bez kanala izostavlja celu rečenicu", () => {
+    const tekst = "Pošaljite broj šasije. Poruku šaljete preko {kanali}.";
+    expect(popuniKanale(tekst, ["viber", "email"], "gen", kanali(KONTAKT))).toBe(
+      "Pošaljite broj šasije. Poruku šaljete preko Vibera ili mejla.",
+    );
+    const prazno = kanali({ telefon: "", viber: "", whatsapp: "", email: "" }, "");
+    expect(popuniKanale(tekst, ["viber", "email"], "gen", prazno)).toBe("Pošaljite broj šasije.");
   });
 });
