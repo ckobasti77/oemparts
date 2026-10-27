@@ -7,6 +7,9 @@
  * „lorem“/„TODO“/`undefined` u vidljivom tekstu, slike bez alt-a ili dimenzija, tuđi domeni za
  * resurse, target=_blank bez rel, dev-only /stil/ sa sadržajem ili bez noindex, segmentni prefetch
  * fajlovi u podfolderima (Windows izvoz bez scripts/fix-export-segments.mjs).
+ * K06: og:image i twitter:image postoje kao fajl (PNG 1200×630), JSON-LD je ispravan JSON sa
+ * @context i kontaktom samo iz content/site.ts, title ≤ 60 i description 120–160 znakova,
+ * sitemap.xml tačno sa javnim stranama, robots.txt sa sitemap-om i ispravan manifest.
  * Upozorenja: privremene vrednosti (P4) i veličine po strani.
  *
  * content/site.ts i content/asortiman.ts se učitavaju direktno (Node ≥ 22.18 skida tipove).
@@ -114,6 +117,21 @@ function idsStrane(html) {
   return new Set([...html.matchAll(/\sid\s*=\s*"([^"]+)"/g)].map((m) => m[1]));
 }
 
+/** PNG širina i visina iz IHDR zaglavlja (bez paketa). */
+function velicinaPng(fajl) {
+  const b = readFileSync(fajl);
+  if (b.length < 24 || b.toString("latin1", 1, 4) !== "PNG") return null;
+  return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
+}
+
+const sadrziMeta = (html, ime) => {
+  for (const m of html.matchAll(/<meta[^>]*>/gi)) {
+    const tag = m[0];
+    if ((atribut(tag, "property") ?? atribut(tag, "name")) === ime) return dekoduj(atribut(tag, "content") ?? "");
+  }
+  return null;
+};
+
 const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
 
 async function main() {
@@ -125,6 +143,54 @@ async function main() {
   const greske = [];
   const upozorenja = [];
   const greska = (strana, poruka) => greske.push(`${strana}: ${poruka}`);
+  const domenHost = new URL(site.domen).host;
+
+  /** og:image i twitter:image (fajl PNG 1200×630) i JSON-LD (ispravan JSON, kontakt samo iz site.ts). */
+  const proveriDeljenje = (ruta, html) => {
+    for (const ime of ["og:image", "twitter:image"]) {
+      const v = sadrziMeta(html, ime);
+      if (!v) {
+        greska(ruta, `nema ${ime}`);
+        continue;
+      }
+      let u;
+      try {
+        u = new URL(v);
+      } catch {
+        greska(ruta, `${ime} nije apsolutan URL: ${v}`);
+        continue;
+      }
+      if (u.host !== domenHost) greska(ruta, `${ime} nije na domenu sajta: ${v}`);
+      if (!postojiUOut(u.pathname)) {
+        greska(ruta, `${ime} ne postoji kao fajl u out/: ${u.pathname}`);
+        continue;
+      }
+      const dim = velicinaPng(path.join(OUT, decodeURIComponent(u.pathname)));
+      if (!dim || dim.w !== 1200 || dim.h !== 630)
+        greska(ruta, `${ime} nije PNG 1200×630: ${u.pathname} (${dim ? `${dim.w}×${dim.h}` : "nije PNG"})`);
+    }
+    const cifreTel = String(site.kontakt.telefon).replace(/\D/g, "").replace(/^0/, "381");
+    for (const m of html.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)) {
+      let podaci;
+      try {
+        podaci = JSON.parse(m[1]);
+      } catch (e) {
+        greska(ruta, `JSON-LD nije ispravan JSON: ${e.message}`);
+        continue;
+      }
+      for (const cvor of Array.isArray(podaci) ? podaci : [podaci]) {
+        if (cvor?.["@context"] !== "https://schema.org")
+          greska(ruta, `JSON-LD (${cvor?.["@type"]}) nema @context https://schema.org`);
+        if (!cvor?.["@type"]) greska(ruta, "JSON-LD bez @type");
+        if (cvor?.telephone && String(cvor.telephone).replace(/\D/g, "") !== cifreTel)
+          greska(ruta, `JSON-LD telephone ${cvor.telephone} nije iz content/site.ts`);
+        if (cvor?.email && cvor.email !== site.kontakt.email)
+          greska(ruta, `JSON-LD email ${cvor.email} nije iz content/site.ts`);
+        for (const v of cvor?.sameAs ?? [])
+          if (v !== site.kp.url) greska(ruta, `JSON-LD sameAs ${v} nije KP link iz content/site.ts`);
+      }
+    }
+  };
 
   const rute = ocekivaneRute(SISTEMI);
   for (const r of rute) if (!existsSync(path.join(OUT, r, "index.html"))) greska(r, "strana ne postoji u out/");
@@ -153,7 +219,6 @@ async function main() {
 
   const fajlovi = htmlFajlovi(OUT);
   const htmlPoRuti = new Map(fajlovi.map((f) => [rutaFajla(f), readFileSync(f, "utf8")]));
-  const domenHost = new URL(site.domen).host;
   const velicine = [];
   // title i description javnih strana moraju biti jedinstveni (K04: 10 strana sistema)
   const naslovi = new Map();
@@ -179,7 +244,13 @@ async function main() {
       const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1]?.trim();
       if (!desc) greska(ruta, "nema meta description");
       zapamti(opisi, desc, ruta);
-      zapamti(naslovi, html.match(/<title>([^<]*)<\/title>/)?.[1]?.trim(), ruta);
+      const naslovStrane = dekoduj(html.match(/<title>([^<]*)<\/title>/)?.[1]?.trim() ?? "");
+      zapamti(naslovi, naslovStrane, ruta);
+      if (naslovStrane.length > 60) greska(ruta, `title ima ${naslovStrane.length} znakova, a najviše je 60`);
+      const opisDuzina = dekoduj(desc ?? "").length;
+      if (desc && (opisDuzina < 120 || opisDuzina > 160))
+        greska(ruta, `meta description ima ${opisDuzina} znakova, a treba 120–160`);
+      proveriDeljenje(ruta, html);
       const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1];
       if (!canonical) greska(ruta, "nema canonical");
       else {
@@ -299,11 +370,42 @@ async function main() {
     for (const strane of mapa.values())
       if (strane.length > 1) greska(strane.join(", "), `isti ${vrsta} na ${strane.length} strane`);
 
-  // sitemap (ako postoji) ne sme da sadrži dev-only rute
+  // sitemap.xml: tačno javne rute (apsolutne, sa „/“), nijedna dev-only
   const sitemap = path.join(OUT, "sitemap.xml");
-  if (existsSync(sitemap)) {
+  if (!existsSync(sitemap)) greska("/sitemap.xml", "nema sitemap.xml");
+  else {
     const xml = readFileSync(sitemap, "utf8");
+    const url = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => dekoduj(m[1]));
+    const ocekivano = rute.map((r) => new URL(r, site.domen).href);
     for (const r of DEV_RUTE) if (xml.includes(r)) greska("/sitemap.xml", `sadrži dev-only rutu ${r}`);
+    for (const u of ocekivano) if (!url.includes(u)) greska("/sitemap.xml", `fali ${u}`);
+    for (const u of url) if (!ocekivano.includes(u)) greska("/sitemap.xml", `višak ili pogrešan URL: ${u}`);
+    if (new Set(url).size !== url.length) greska("/sitemap.xml", "ima duplih URL-ova");
+  }
+
+  // robots.txt pominje sitemap i ne zabranjuje sajt
+  const robots = path.join(OUT, "robots.txt");
+  if (!existsSync(robots)) greska("/robots.txt", "nema robots.txt");
+  else {
+    const t = readFileSync(robots, "utf8");
+    const sm = t.match(/^Sitemap:\s*(\S+)/im)?.[1];
+    if (!sm) greska("/robots.txt", "ne pominje Sitemap");
+    else if (sm !== new URL("/sitemap.xml", site.domen).href) greska("/robots.txt", `Sitemap ${sm} ne odgovara domenu sajta`);
+    if (/^Disallow:\s*\/\s*$/im.test(t)) greska("/robots.txt", "zabranjuje ceo sajt");
+  }
+
+  // manifest je ispravan JSON, a njegove ikonice postoje
+  const manifest = path.join(OUT, "manifest.webmanifest");
+  if (!existsSync(manifest)) greska("/manifest.webmanifest", "nema manifesta");
+  else {
+    try {
+      const m = JSON.parse(readFileSync(manifest, "utf8"));
+      if (!m.name || !m.start_url) greska("/manifest.webmanifest", "nema name ili start_url");
+      for (const ik of m.icons ?? [])
+        if (!postojiUOut(ik.src)) greska("/manifest.webmanifest", `ikonica ne postoji: ${ik.src}`);
+    } catch (e) {
+      greska("/manifest.webmanifest", `nije ispravan JSON: ${e.message}`);
+    }
   }
 
   // P4: privremene vrednosti (upozorenje)

@@ -2,6 +2,7 @@
  * Graditelji linkova za kanale kontakta (plan K01 §7.1). Kanal bez ispravne vrednosti vraća
  * `null` i ne prikazuje se nigde (P4). Jedini izvor za header, meni, donju traku, footer i kontakt.
  */
+import type { Pitanje } from "@/content/kupovina";
 import { site } from "@/content/site";
 import { KANALI, KANALI_OBLICI } from "@/content/navigacija";
 import { formatPhone, normalizePhone } from "@/lib/format";
@@ -158,4 +159,12 @@ export function popuniKanale(
     .split(/(?<=[.!?])\s+/)
     .filter((recenica) => !recenica.includes("{kanali}"))
     .join(" ");
+}
+
+/** Pitanja sa popunjenim `{kanali}` u odgovoru (samo kanali koji imaju vrednost, P4). */
+export function popuniPitanja(pitanja: readonly Pitanje[], lista: readonly Kanal[] = kanali()): Pitanje[] {
+  return pitanja.map(({ kanali: vrste, odgovor, ...ostalo }) => ({
+    ...ostalo,
+    odgovor: vrste ? popuniKanale(odgovor, vrste, "instr", lista) : odgovor,
+  }));
 }

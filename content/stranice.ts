@@ -43,6 +43,55 @@ export const oNamaStrana = {
   },
   naslov: "O nama",
   uvod: "Euromotors Plus je veleprodaja originalnih i OEM delova za vozila Volkswagen, Audi, Škoda, SEAT i Cupra. Kupci nas znaju i kao OEM Parts.",
+  sta: {
+    naslov: "Šta radimo",
+    /** `{kanali}` popunjava lib/links.ts samo kanalima koji imaju vrednost (P4). */
+    pasusi: [
+      "Euromotors Plus je registrovan kao veleprodaja. Nabavljamo i prodajemo delove za vozila VW grupe, od motora i kočnica do elektrike i karoserije. Radimo sa servisima, automehaničarima i firmama.",
+      "Ponudu možete da pogledate u našoj prodavnici na KupujemProdajem. Za deo koji ne nađete ili ako niste sigurni šta vam treba, pošaljite broj šasije. Možete nam se javiti i direktno: {kanali}.",
+    ],
+    kanali: ["telefon", "viber", "whatsapp", "email"] as const,
+  },
+  pojmovi: {
+    naslov: "Originalni, OEM i zamenski delovi",
+    uvod: "Na tržištu se za isti deo nude tri vrste. Razlika je u tome ko ga pravi i u čijem pakovanju stiže.",
+    stavke: [
+      { izraz: "Originalni deo", tekst: "Stiže u pakovanju proizvođača vozila i nosi njegovu oznaku." },
+      {
+        izraz: "OEM deo",
+        tekst: "Pravi ga proizvođač koji isti deo isporučuje i fabrici vozila, ali ga prodaje u svom pakovanju.",
+      },
+      {
+        izraz: "Zamenski deo",
+        tekst: "Pravi ga proizvođač koji deo ne isporučuje fabrici vozila. Kvalitet zavisi od proizvođača.",
+      },
+    ],
+    zasto:
+      "Deo napravljen po specifikaciji proizvođača vozila treba da staje bez prepravki i da radi onako kako je vozilo projektovano.",
+    zakljucak: "Mi nudimo originalne i OEM delove.",
+  },
+  kako: {
+    naslov: "Kako radimo",
+    stavke: [
+      {
+        naslov: "Provera po broju šasije",
+        tekst: "Pre ponude proveravamo da li deo odgovara vozilu, po broju šasije.",
+      },
+      {
+        naslov: "Prodavnica na KupujemProdajem",
+        tekst: "Ponudu pogledajte u našoj prodavnici i kupite preko te platforme.",
+      },
+      {
+        naslov: "Direktan dogovor",
+        tekst: "Servisi i firme sa nama dogovaraju nabavku direktno. Deo koji ne nađete zatražite upitom.",
+      },
+    ],
+  },
+  panelNaslov: "Kontakt",
+  cta: {
+    naslov: "Tražite deo za vozilo VW grupe?",
+    tekst: "Pošaljite broj šasije i šta vam treba. Proverićemo deo i javiti vam ponudu.",
+  },
 };
 
 /**
@@ -52,8 +101,8 @@ export const oNamaStrana = {
 export const kontaktStrana = {
   meta: {
     naslov: "Kontakt",
-    opis: "Kontakt Euromotors Plus · OEM Parts, veleprodaje delova za vozila VW grupe. Javite nam se {kanali}. Za upit po delu pošaljite i broj šasije.",
-    opisKp: "Ponudu pogledajte i u prodavnici na KupujemProdajem.",
+    opis: "Kontakt Euromotors Plus · OEM Parts. Javite nam se {kanali}. Za deo pošaljite broj šasije.",
+    opisKp: "Ponuda je i na KupujemProdajem.",
   },
   kanaliMeta: ["telefon", "viber", "whatsapp", "email"] as const,
   naslov: "Kontakt",

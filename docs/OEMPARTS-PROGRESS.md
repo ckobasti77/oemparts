@@ -423,3 +423,54 @@ Svaki korak dopisuje svoju sekciju na kraj, sa svojim ODLUKAMA i BLOKADAMA.
 - **Snimci** su `docs/oemparts/snimci/K05-*.png`. Na snimcima od 390 px donja traka je pomerena na dno strane.
 - **`/kontakt/`** je sada kratak, jer adresa, radno vreme i firma čekaju klijenta. Kad se upišu u `content/site.ts`, pojavljuju se blokovi i mapa na klik.
 - **PODACI-OD-KLIJENTA** sada ima nove stavke saradnje: rabat, rokovi, plaćanje, slanje, račun na firmu i lista delova.
+
+## K06 — O nama, kako kupiti, pravne strane i SEO   (2026-10-27 22:35)
+**Fajlovi:**
+- Novo: `app/{sitemap,robots,manifest}.ts` (svi `force-static`), `scripts/og.mjs` (`npm run og`), `public/og/*.png` (19), `tests/unit/seo-rute.test.ts`.
+- Izmenjeno:
+  - strane: `app/o-nama/page.tsx`, `app/kako-kupiti/page.tsx`, `components/layout/LegalPage.tsx`;
+  - sadržaj: `content/{stranice,kupovina,pravno,upit}.ts`;
+  - `lib/{seo,jsonld,links}.ts`, `scripts/check-site.mjs`, `package.json` (skripta `og`), `docs/PODACI-OD-KLIJENTA.md`.
+- Snimci `docs/oemparts/snimci/K06-{o-nama,kako-kupiti,politika-privatnosti,uslovi-koriscenja}-{390,1440}.png`.
+
+**Šta je urađeno:**
+- **`/o-nama/`:** „Šta radimo“, „Originalni, OEM i zamenski delovi“ (`dl` + „Mi nudimo originalne i OEM delove.“), „Kako radimo“ (3 stavke), CtaBand. Od 1024 px desno je lepljiv panel „Kontakt“ (`ChannelList`). Bez godina, brojki i recenzija.
+- **`/kako-kupiti/`:** tri koraka kao vertikalna lista (broj levo), u prvom KP (primarno) i „Pošaljite upit“; sedam pitanja (Disclosure); FAQPage + BreadcrumbList.
+- **Pravne strane:** nov tekst za sajt bez naloga, prodaje i kolačića, sa formom koja ništa ne šalje serveru. 9 sekcija u politici, 11 u uslovima, sidra, lepljiv „Sadržaj strane“ od 1280 px, ispod toga Disclosure. Podaci o firmi i kontakt se ispisuju iz `content/site.ts`, samo popunjeni.
+- **Metadata:** `pageMetadata` sada sam dodaje OG i Twitter sliku (`ogSlikaZa`). Title ≤ 60, description 120–160, canonical sa „/“ i `metadataBase` iz `site.ts` provereni su u izvozu za svih 20 strana.
+- **JSON-LD:** `Organization` (bez adrese, K01-14) dobija `image` = `/og/pocetna.png`; `AutoPartsStore` se pojavljuje čim `site.adresa` ima ulicu i mesto. `sameAs` samo sa pravim KP linkom. BreadcrumbList na unutrašnjim stranama, FAQPage na `/kako-kupiti/` i `/saradnja/`.
+- **Metadata rute:** `sitemap.xml` (20 javnih, bez `/stil/`), `robots.txt` sa sitemap-om, `manifest.webmanifest`.
+- **OG slike:** `npm run og` pravi 19 PNG 1200×630 (24–70 KB) iz `content/*.ts` preko Chrome-a (Playwright) i sharp-a; ne traži `out/`.
+- **`check:site`:** nove greške za `og:image` i `twitter:image` (apsolutan URL, fajl postoji, PNG 1200×630), JSON-LD (JSON.parse, `@context`, `@type`, telefon, mejl i `sameAs` samo iz `site.ts`), title ≤ 60, description 120–160, tačan sitemap, robots sa sitemap-om, ispravan manifest sa postojećim ikonicama. Duplirani title i description su već bili provera iz K04.
+
+**ODLUKE:**
+- **Meta opisi:** `/kontakt/` (bio 227 znakova) i `/upit/` (161) skraćeni su da stanu u 160; novi check bi inače pao. Kontakt: „Kontakt Euromotors Plus · OEM Parts. Javite nam se {kanali}. Za deo pošaljite broj šasije.“ + „Ponuda je i na KupujemProdajem.“ Upit: „…ne šalje sa sajta i ne čuva.“
+- **FAQ „Kako kupiti“ sa `{kanali}`:** pitanja 1 i 7 pominju kanale preko `popuniPitanja` (`lib/links.ts`), pa strana i FAQPage JSON-LD nikad ne pominju kanal bez vrednosti. Pitanje 1 je razdvojeno: KP je rečenica za sebe, direktan dogovor sa kanalima je druga.
+- **Pravni tekst bez rokova i brojki:** čuvanje podataka je „koliko je potrebno i koliko zakon zahteva“, jer rokovi nisu dati (P5). Nisu navedeni hosting ni zemlja servera. Ne obećava se povraćaj ni reklamacija; piše da prava potrošača po zakonu ostaju. Sve ide klijentovom pravniku (stavka u PODACI).
+- **Zamenski delovi se pominju na „O nama“** (plan §4.7 traži tri pojma), uz „Mi nudimo originalne i OEM delove.“ Potvrda je u PODACI.
+- **OG slike:** pocetna i opste imaju render auta, ostale render dela (sistemi: slika sistema; asortiman: motor, upit: diskovi, saradnja: menjač, kako kupiti: filteri, kontakt: farovi, vozila i o nama: sklopljen auto). Naslov se smanjuje do 36 px da stane u 3 reda. Slike nisu pravljene preko `opengraph-image` rute (izvoz bez ekstenzije).
+- **Podnaslov OG slike početne** je „Veleprodaja delova za {marke}“, a ne ponovljen naslov. Ostale imaju „Originalni i OEM delovi za vozila VW grupe“.
+- **`/kako-kupiti/`** ima sopstvenu listu koraka umesto `Koraci` (ta komponenta je u 4 kolone od 1280 px, a plan traži vertikalnu listu sa brojem levo).
+- **Sadržaj strane na pravnim stranama:** od 1280 px lepljiv panel, ispod toga Disclosure sa H2 naslovom. Ista sidra se ponavljaju u DOM-u (jedan je uvek `display:none`).
+- **Playwright MCP se nije povezao** (CONNECT_TIMEOUT). Snimke i merenja radi skripta u `.nocni-run/oemparts/tmp/` preko `@playwright/test` i Chrome-a. Zato u ovom koraku nema MCP procesa.
+- **`check-site.mjs`** je preveden u LF krajeve redova (bio je mešan).
+
+**Novi paketi:** nema.
+
+**Testovi** (ukupno 146, bilo 133):
+- `seo-rute.test.ts`:
+  - sitemap (20 apsolutnih URL-ova sa „/“, bez `/stil/`), robots, manifest (ikonice postoje);
+  - `ogSlikaZa` za sve vrste strana; skripta daje 19 imena; svaka javna strana ima fajl u `public/og/`; svaki PNG je 1200×630 i < 200 KB; `pageMetadata` dodaje OG i Twitter sliku;
+  - opisi i naslovi novih strana; sidra pravnih sekcija; politika pominje kolačiće i analitiku; pravni tekst nema kontakta ni PIB-a (dolaze iz `site.ts`);
+  - `popuniPitanja` sa kanalima i bez njih; JSON-LD firme (kontakt iz `site.ts`, slika, `Organization` bez adrese); opisi Kontakta i Upita 120–160.
+
+**Rezultat provere:** typecheck ✓ · lint ✓ · test 146/146 ✓ · build ✓ · check:site ✓ (0 grešaka; 7 upozorenja: 6 P4 i `/upit/` početni JS 145,9 KB, vidi K05). Nove provere su probane na pokvarenom izvozu (nedostajuća OG slika, loš `@context`): padaju kako treba.
+- **Prihvatanje:** svih 20 strana ima jedinstven title i description; `out/sitemap.xml` ima 20 javnih strana i nijednu dev-only; JSON-LD prolazi `JSON.parse` i uzima kontakt iz `site.ts`.
+- **Snimci:** na 390 i 1440 nema horizontalnog skrola, nijedan reveal nije `pending`, mete u `main` ≥ 44 px, konzola bez grešaka. Preview (3241) je ugašen, portovi 3240 i 3241 su slobodni.
+
+**Za Jovana ujutru:**
+- **Pravna provera:** pročitati `/politika-privatnosti/` i `/uslovi-koriscenja/` i dati pravniku; spisak tačaka je u PODACI.
+- **OG slike:** pogledati `public/og/pocetna.png`, `asortiman-kocnice.png` i `opste.png` (npr. u Viber/Facebook debuggeru kad domen bude gotov). Posle promene domena ili logotipa: `npm run og`, pa `npm run build`.
+- **Domen:** `og:image`, canonical i sitemap koriste `https://www.example.com` iz `site.ts` dok klijent ne pošalje pravi.
+- **JSON-LD:** kad se u `site.ts` upiše adresa, firma postaje `AutoPartsStore` sa adresom i radnim vremenom; sa pravim KP linkom ulazi u `sameAs`.
+- **Snimci:** `docs/oemparts/snimci/K06-*.png` (na 390 px donja traka stoji preko sadržaja samo zbog snimka cele strane).

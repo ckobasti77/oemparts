@@ -10,7 +10,7 @@
 export const upitStrana = {
   meta: {
     naslov: "Upit po broju šasije (VIN)",
-    opis: "Pošaljite broj šasije (VIN) i šta vam treba. Sajt sastavi poruku, a vi je šaljete {kanali}. Ništa se ne šalje sa sajta i ništa se ne čuva.",
+    opis: "Pošaljite broj šasije (VIN) i šta vam treba. Sajt sastavi poruku, a vi je šaljete {kanali}. Ništa se ne šalje sa sajta i ne čuva.",
   },
   naslov: "Upit po broju šasije",
   uvod: "Upišite broj šasije i šta vam treba. Sajt sastavi poruku, a vi je pošaljete preko {kanali}.",

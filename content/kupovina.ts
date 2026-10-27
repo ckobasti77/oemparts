@@ -1,6 +1,11 @@
 /** Kako kupiti: koraci i česta pitanja (plan K01 §4.8, §6.5). Bez rokova, cena i garancija (P5). */
 
-export type Pitanje = { pitanje: string; odgovor: string };
+export type KanalOdgovora = "telefon" | "viber" | "whatsapp" | "email";
+/**
+ * `{kanali}` u odgovoru popunjava lib/links.ts `popuniPitanja` kanalima iz `kanali` koji imaju
+ * vrednost (P4); rečenica bez ijednog takvog kanala se izostavlja.
+ */
+export type Pitanje = { pitanje: string; odgovor: string; kanali?: readonly KanalOdgovora[] };
 export type Korak = { naslov: string; tekst: string };
 
 export const kupovinaStrana = {
@@ -32,7 +37,8 @@ export const FAQ_KUPOVINA: readonly Pitanje[] = [
   {
     pitanje: "Da li mogu da kupim deo direktno na sajtu?",
     odgovor:
-      "Ne. Sajt ne prodaje online. Delove kupujete preko naše prodavnice na KupujemProdajem ili direktno, posle dogovora telefonom, Viberom, WhatsApp-om ili mejlom.",
+      "Ne. Sajt ne prodaje online. Delove kupujete preko naše prodavnice na KupujemProdajem. Možete ih kupiti i direktno, posle dogovora {kanali}.",
+    kanali: ["telefon", "viber", "whatsapp", "email"],
   },
   {
     pitanje: "Kako da budem siguran da deo odgovara mom vozilu?",
@@ -59,6 +65,7 @@ export const FAQ_KUPOVINA: readonly Pitanje[] = [
   },
   {
     pitanje: "Šta ako deo ne odgovara?",
-    odgovor: "Pre kupovine proverite deo po broju šasije. Za povrat ili reklamaciju javite nam se telefonom ili mejlom.",
+    odgovor: "Pre kupovine proverite deo po broju šasije. Za povrat ili reklamaciju javite nam se {kanali}.",
+    kanali: ["telefon", "email"],
   },
 ];

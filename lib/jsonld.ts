@@ -6,7 +6,7 @@ import { site } from "@/content/site";
 import type { Pitanje } from "@/content/kupovina";
 import { kpHref, kpJeGenericki } from "@/lib/links";
 import { normalizePhone } from "@/lib/format";
-import { apsolutniUrl } from "@/lib/seo";
+import { apsolutniUrl, ogSlikaZa } from "@/lib/seo";
 
 export type JsonLd = Record<string, unknown>;
 
@@ -81,6 +81,7 @@ export function prodavnicaLd(ulaz: ProdavnicaUlaz = {
   kontakt: site.kontakt,
   radnoVreme: site.radnoVreme,
   kpUrl: site.kp.url,
+  slika: ogSlikaZa("/"),
 }): JsonLd {
   const imaAdresu = Boolean(ulaz.adresa.ulica.trim() && ulaz.adresa.mesto.trim());
   const kp = kpHref(ulaz.kpUrl);
