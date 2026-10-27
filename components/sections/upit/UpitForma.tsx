@@ -361,11 +361,14 @@ export function UpitForma({
           </div>
 
           <div className="flex flex-col gap-3 border-t border-line pt-8 sm:flex-row sm:items-center sm:gap-5">
+            {/* Pritisak ne uzima fokus (K07): inače izlaz iz polja prikaže grešku iznad dugmeta,
+                dugme se pomeri pre puštanja i klik promaši. Provera ide na „Sastavi“. */}
             <Button
               type="submit"
               size="lg"
               disabled={!hidratisano}
               aria-describedby="upit-sastavi-pomoc"
+              onMouseDown={(e) => e.preventDefault()}
               className="w-full sm:w-auto"
             >
               {UPIT_POLJA.sastavi}

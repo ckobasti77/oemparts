@@ -114,7 +114,7 @@ function MeniSadrzaj() {
             <li key={s.ruta} data-menu-item="">
               <NavLink
                 href={RUTE[s.ruta]}
-                className="group -mx-3 flex min-h-14 items-center justify-between gap-3 rounded-sm px-3 md:min-h-12 type-h3 text-ink-2 transition-control hover:bg-surface-2 hover:text-ink-1 aria-[current=page]:text-ink-1"
+                className="group -mx-3 flex min-h-14 items-center justify-between gap-3 rounded-sm px-3 md:min-h-12 type-h3 text-ink-2 transition-control hover:bg-surface-2 hover:text-ink-1 active:bg-surface-3 aria-[current=page]:text-ink-1"
               >
                 <span className="decoration-accent decoration-2 underline-offset-8 group-aria-[current=page]:underline">
                   {s.oznaka}
@@ -138,7 +138,7 @@ function MeniSadrzaj() {
                   <a
                     href={k.href}
                     {...(k.spoljni ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                    className="-mx-3 flex min-h-12 items-center gap-3 rounded-sm px-3 text-ink-1 transition-control hover:bg-surface-2"
+                    className="-mx-3 flex min-h-12 items-center gap-3 rounded-sm px-3 text-ink-1 transition-control hover:bg-surface-2 active:bg-surface-3"
                   >
                     <Ikona size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
                     <span className="min-w-0">

@@ -474,3 +474,88 @@ Svaki korak dopisuje svoju sekciju na kraj, sa svojim ODLUKAMA i BLOKADAMA.
 - **Domen:** `og:image`, canonical i sitemap koriste `https://www.example.com` iz `site.ts` dok klijent ne pošalje pravi.
 - **JSON-LD:** kad se u `site.ts` upiše adresa, firma postaje `AutoPartsStore` sa adresom i radnim vremenom; sa pravim KP linkom ulazi u `sameAs`.
 - **Snimci:** `docs/oemparts/snimci/K06-*.png` (na 390 px donja traka stoji preko sadržaja samo zbog snimka cele strane).
+
+## K07 — Pokret, telefon, pristupačnost, brzina i e2e   (2026-10-27 23:52)
+**Fajlovi:**
+- Novo:
+  - `playwright.config.ts` (projekti `telefon` 390 × 844 i `desktop` 1440 × 900, Chrome sa računara, server 3241);
+  - `tests/e2e/{pomoc.ts,strane,a11y,linkovi,upit,meni,pokret,ljuska,kontakt,uglovi}.spec.ts`;
+  - `scripts/lighthouse.mjs` (`npm run lighthouse`), `docs/oemparts/merenja.md`.
+- Izmenjeno:
+  - pokret: `components/motion/{gsap.ts,RevealEngine.tsx,useSheetMotion.ts,ScrollCrossfade.tsx}`;
+  - stanja: `app/globals.css` (`card-link` i `link-underline` pritisak, `scroll-margin-top` umesto `scroll-padding-top`), `components/ui/{Chip,Disclosure}.tsx`, `components/layout/{ChannelList,Header}.tsx`;
+  - slike i strane: `components/ui/PartImage.tsx`, `components/sections/GroupCard.tsx`, `app/asortiman/page.tsx`, `app/vozila/page.tsx`;
+  - forma: `components/sections/upit/UpitForma.tsx` (dugme „Sastavi poruku“);
+  - `package.json` (`e2e`, `lighthouse`), `.gitignore` (`/test-results/`, `/playwright-report/`, `/blob-report/`), `DESIGN.md` (sekcija Motion).
+- Snimci `docs/oemparts/snimci/K07-*`: sve strane (početna, asortiman, 10 sistema, vozila, upit, saradnja, o nama, kako kupiti, kontakt, dve pravne, 404) na 390 i 1440.
+
+**Šta je urađeno:**
+- **Pokret.** Svaka strana sa reveal-om koristi isti primitiv (`Reveal`/`RevealGroup`) i jedan motor; mreže i liste ulaze sa stagger-om (na `/vozila/` su redovi marki sada paket). GSAP se učitava tek posle `load` i prvog iscrtavanja (`posleUcitavanja` u `components/motion/gsap.ts`) i samo gde treba: reveal samo na strani koja ima mete, meni samo ispod 1280 px, ScrollTrigger samo za hero. Slika „rasklopljen auto“ se iscrtava tek kad se pretapanje aktivira. Dodata su stanja pritiska: kartice, tekst linkovi, čipovi, redovi kanala, FAQ i meni.
+- **Dva prava baga nađena e2e testovima i popravljena:**
+  - klik na „Sastavi poruku“ posle neispravnog polja je promašivao: izlaz iz polja prikaže grešku iznad dugmeta, dugme se pomeri pre puštanja miša i klik ne stigne; dugme sada ne uzima fokus na pritisak (`onMouseDown` → `preventDefault`), a provera ide na „Sastavi“;
+  - fokus na elementu u lepljivom header-u (Tab ili Shift+Tab unutar header-a, `focus()` na „Meni“) skrolovao je stranu skoro do vrha, jer je `scroll-padding-top` na `html` tražio da header stoji ispod samog sebe; razmak je sada `scroll-margin-top` na sadržaju (`main`, `footer`), pa sidra i dalje staju ispod header-a.
+- **Telefon:** e2e proverava 360/390/768/1024/1440 bez horizontalnog skrola na svih 21 strani, mete ≥ 44 px (header, meni, traka, sadržaj; polja i dugmad forme 48) i da donja traka ne pokriva footer.
+- **Pristupačnost:** axe (WCAG 2.0/2.1/2.2 A i AA) daje 0 nalaza na svih 21 strani u oba projekta, sa otvorenim menijem i na `/upit/` sa greškama.
+- **Brzina:** LCP slika na `/asortiman/` (prvi red rendera) ide odmah i sa visokim prioritetom, bez preload nagoveštaja. Lighthouse i JS po strani su u `docs/oemparts/merenja.md` (tabele ispod).
+- **e2e** (`npm run e2e`): gradi, Playwright diže `out/` na 3241 i gasi ga; 9 spec fajlova, 264 testa u dva projekta.
+
+**ODLUKE:**
+- **„Svaka strana koristi isti reveal primitiv“** je protumačeno kao „nijedna strana nema drugi mehanizam“, uz izuzetke iz plana K01 §5.1: forma upita, kontakt, pravne strane i 404 nemaju reveal. To je konzervativnije: tamo je sadržaj odmah ceo.
+- **GSAP se učitava posle `load` i dva frame-a, u mirovanju** (`posleUcitavanja`). Pre toga je RevealEngine učitavao GSAP u `requestIdleCallback`, što je na brzoj mreži bilo pre prvog iscrtavanja, i to i na stranama bez ijedne mete. Ako korisnik skroluje pre nego što GSAP stigne, sadržaj se samo pojavi bez animacije (ništa nije sakriveno).
+- **Overlay heroja („rasklopljen auto“) se iscrtava tek kad se pretapanje aktivira.** Bez JS-a i pod reduced motion se nikad ne preuzima.
+- **Prvi red rendera na `/asortiman/` (2 slike) je `eager` + `fetchpriority="high"` u `<picture>` omotaču.** React ne pravi preload nagoveštaj za sliku u `<picture>` (proveren izvor `react-dom-server` i izvezeni HTML: u `<head>` nema preload slike), pa razlog ODLUKE K04 (prefetch preuzima rendere na drugim stranama) i dalje važi. LCP na asortimanu: 4,08 s → 3,48 s (simulacija).
+- **„Sastavi poruku“ ne uzima fokus na pritisak mišem** (`onMouseDown` → `preventDefault`). Bez toga izlaz iz polja sa greškom ubaci poruku iznad dugmeta, dugme se pomeri pre puštanja i klik promaši (e2e je to uhvatio na oba projekta). Tastatura i dodir rade isto kao pre; provera svih polja ide na „Sastavi“. Početni JS `/upit/` je 146,0 KB (+0,1 KB; upozorenje iz K05 ostaje).
+- **`scroll-padding-top` na `html` je zamenjen sa `scroll-margin-top` na `:where(main, footer) *`.** Sa starim pravilom fokus na elementu u lepljivom header-u skroluje stranu (provereno: Shift+Tab sa „Meni“ na KP dugme na 1024 px pomeri skrol sa 600 na 208 px; sada ostaje 600). Sidra i dalje staju ispod header-a (e2e proverava `/asortiman/#kocnice`). `scroll-padding-bottom` za donju traku ostaje.
+- **Stanja pritiska:** kartice (površina 2, a sa mišem −1 px umesto −2), tekst linkovi (narandžasta podvlaka), čipovi (`press`, površina 3), redovi menija, kanala i FAQ (površina 3). Tokeni nisu menjani.
+- **`/vozila/`:** redovi marki su `RevealGroup`/`RevealItem` (stagger u listi, plan §5.1 „paneli marki“), umesto jednog bloka.
+- **`experimental.inlineCss` je proban i vraćen:** HTML 61–70 KB gzip (budžet 40), jer Next ponavlja CSS i u RSC podacima.
+- **Lighthouse:** zvanično merenje je podrazumevano simulirano prigušenje, kako traži plan; `--metoda devtools` je dodat kao provera. Pre merenja skripta jednom preuzme stranu i resurse (preview server kompresuje pri prvom zahtevu i pamti), a `npx` ide sa `--prefer-offline`. Preview server kešira fajlove u memoriji, pa posle `npm run build` mora ponovo da se pokrene (jedno rano merenje u K07 je zbog toga dobilo 404 za JS deo).
+- **e2e:**
+  - širine 360–1440 se menjaju samo u projektu `desktop` (projekat `telefon` je već 390 sa emulacijom telefona);
+  - axe se pušta posle skrola do dna, sa vrha strane: na dnu lepljivi header stoji preko sadržaja, pa bi axe meru mete i kontrast računao za ono što je ispod njega;
+  - „sastavljanje ne šalje ništa“ dozvoljava samo GET/HEAD ka našem statičkom sajtu (Next prefetch strana i lenji kod) i proverava da nijedan URL ne nosi vrednost iz forme;
+  - u testu menija fokus ide nativnim `focus()` + Enter: Playwright `click()`/`focus()` sami skroluju lepljivi header „u vidik“ (stvaran dodir to ne radi, provereno);
+  - Windows clipboard vraća CRLF, pa se tekst normalizuje pre poređenja;
+  - overlay heroja je dobio `data-crossfade-overlay` (za test reduced motion);
+  - test mape na klik je `skip` dok adresa u `site.ts` nije podešena (P4); drugi test tada proverava da nema iframe-a ni zahteva ka Google-u.
+- **Pregled snimaka (radnik, Sonnet):** jasnih grešaka nema. Provereno na punoj razmeri i odbačeno: naslov heroja ne dodiruje render (1440), „KupujemProdajem“ u donjoj traci nije odsečen (390). Ostale sumnje su odluke iz K03/K04 (red čipova sa skrolom i gašenjem na ivici, prigušene VIN ćelije, kartica susednog sistema). Impeccable detektor nad izmenjenim fajlovima: 0 nalaza.
+
+**Novi paketi:** nema (`@playwright/test` i `@axe-core/playwright` su iz K02; Lighthouse preko `npx lighthouse@13.5.0`).
+
+**Testovi** (e2e, novo; `npm run e2e`): 264 testa u dva projekta (`telefon` 390 × 844 sa dodirom, `desktop` 1440 × 900): 236 prolazi, 28 namerno preskočeno (širine samo u `desktop`, meni samo na telefonu, mapa bez adrese), 0 pada, ~2,5 min.
+- `strane.spec.ts`: 20 strana + 404 (status 404) bez grešaka u konzoli, bez neuspelih zahteva i bez ijednog zahteva ka tuđem domenu (posle skrola do dna), tačno jedan `h1`, naslovi bez preskakanja nivoa, bez horizontalnog skrola na 360/390/768/1024/1440.
+- `a11y.spec.ts`: axe (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`, `wcag22aa`) = 0 na 21 strani u oba projekta, sa otvorenim menijem i na `/upit/` sa greškama.
+- `linkovi.spec.ts`: interni linkovi iz header-a, menija, footera i početne vraćaju 200 i imaju „/“; KP linkovi tačni, `_blank`, `noopener noreferrer`; tel/Viber/WhatsApp/mejl tačni (očekivano se računa iz `site.ts`, nezavisno od `lib/links.ts`); donja traka i header; `/upit/?deo=kocioni-diskovi`.
+- `upit.spec.ts` (samo tastatura): prazna forma → fokus na sažetak, `aria-invalid` i `aria-describedby` sa greškom, link u sažetku vodi na polje; VIN sa „O“ → poruka, predlog i dugme „Upiši …“ (Enter ispravlja); ispravna forma → pregled jednak `sastaviPoruku`, WhatsApp/Viber/mejl nose celu poruku, „Kopiraj poruku“ puni clipboard i prikazuje status, bez slanja podataka.
+- `meni.spec.ts`: Tab do „Meni“, Enter, fokus u dijalogu, Tab i Shift+Tab kruže, Escape vraća fokus; skrol zaključan i fokus na „Meni“ ne skroluje; link zatvara meni i vodi na stranu.
+- `pokret.spec.ts`: skrol do dna i nazad na 7 dugih strana; End/Home skok (motor je pre toga sakrio bar jednu metu); sidro `#kocnice` ispod header-a; nazad/napred; reduced motion bez ijedne skrivene ili pomerene mete i bez overlay-a; LCP slika heroja nije lenja, ima `fetchpriority="high"` i opacity 1 od početka.
+- `ljuska.spec.ts`: donja traka ispod 1024 px, skrivena od 1024; ne pokriva footer (4 strane); mete ≥ 44 px u header-u, traci, meniju i sadržaju 6 strana; polja i dugmad forme ≥ 48; header `data-condensed`.
+- `kontakt.spec.ts`; `uglovi.spec.ts` (nijedno dugme, polje, kartica, slika ni panel bez radijusa, na 8 strana).
+- Unit testovi nisu menjani (146).
+
+**Merenja** (detaljno u `docs/oemparts/merenja.md`):
+
+| Strana | Perf (sim.) | A11y | BP | SEO | LCP (sim.) | CLS | TBT (sim.) | Perf / LCP / TBT (devtools) |
+|---|---|---|---|---|---|---|---|---|
+| `/` | 93 | 100 | 100 | 100 | 3,25 s | 0 | 24 ms | 87 / 2,18 s / 386 ms |
+| `/asortiman/` | 91 | 100 | 100 | 100 | 3,48 s | 0 | 24 ms | 89 / 2,14 s / 347 ms |
+| `/asortiman/kocnice/` | 96 | 100 | 100 | 100 | 2,80 s | 0 | 25 ms | 92 / 2,09 s / 252 ms |
+| `/upit/` | 96 | 100 | 100 | 100 | 2,73 s | 0 | 24 ms | 93 / 2,01 s / 236 ms |
+| `/kontakt/` | 96 | 100 | 100 | 100 | 2,72 s | 0 | 38 ms | 90 / 1,94 s / 351 ms |
+
+Početni JS (gzip): 138,8 KB na većini strana, `/` 139,7, `/kontakt/` 142,6, `/upit/` 146,0. HTML 26,1–39,4 KB, CSS 10,8 KB.
+
+**Rezultat provere:** typecheck ✓ · lint ✓ · test 146/146 ✓ · build ✓ · check:site ✓ (0 grešaka; 7 upozorenja: 6 P4 i `/upit/` 146,0 KB početnog JS-a) · e2e 236 ✓ / 28 preskočeno / 0 ✗. Preview i svi procesi koje je korak pokrenuo su ugašeni; portovi 3240 i 3241 su slobodni. Playwright MCP u ovom koraku nije korišćen (snimci i merenja idu preko `@playwright/test` skripti). Na računaru i dalje rade procesi `@playwright/mcp@0.0.83` (jedan sa `--output-dir docs/oemparts/snimci`, PID 21656, i jedan za drugi projekat, `docs/ultra/snimci`). Pokreće ih okruženje Claude sesije iz MCP konfiguracije (kao u K04 i K05), a ne komanda ovog koraka; nisu dirani.
+
+**BLOKADA:** prihvatanje „Lighthouse mobile na 5 strana: performanse ≥ 95“ nije ispunjeno na `/` (93) i `/asortiman/` (91), a budžet LCP ≤ 2,0 s u simulaciji nije ispunjen ni na jednoj od 5 strana (2,72–3,48 s). Pristupačnost, najbolje prakse i SEO su 100 na svih 5; CLS 0; TBT 24–38 ms.
+- **Tačan razlog (simulacija na localhost-u):** Lantern računa LCP iz zapisa učitavanja bez prigušenja. Na localhost-u ceo JS (~130 KB; od toga React + Next ~120 KB) stigne za ~25 ms i izvrši se pre prvog iscrtavanja, jer prvi frame svakog novog (hladnog) Chrome-a traje 120–340 ms (i sa isključenim JS-om ~330 ms; u toplom pregledaču ~85 ms). Lantern zato računa ceo JS kao blokirajući za LCP i dodaje njegovo preuzimanje na Slow 4G. Na `/` i `/asortiman/` se pre posmatranog LCP-a završe i lenji renderi van ekrana (147 KB i 265 KB; Chrome ih uzima na < 1250 px od ekrana), pa su te dve strane ispod 95.
+- **Provera stvarnim prigušenjem** (`--metoda devtools`): LCP je 1,94–2,18 s (strana se iscrta pre JS-a), ali je TBT 236–386 ms zbog prvog raspoređivanja u hladnom Chrome-u i hidratacije pod 4× CPU, uz raspon do 13 poena između merenja na opterećenom računaru. Performanse 87–93.
+- **Šta je probano, a ne pomaže ili krši drugi budžet:** `experimental.inlineCss` (HTML 61–70 KB > 40), `content-visibility: auto` (slike se i dalje preuzimaju), A/B stila (`text-wrap`, `backdrop-filter`: u šumu). Ostatak JS-a je osnova Next 16.4 + React 19.3, koja se ne može ukloniti.
+- **Šta treba za konačnu ocenu:** PageSpeed Insights (ili `npx lighthouse@13.5.0`) nad postavljenim sajtom (HTTPS, HTTP/2, prava mreža). To radi Jovan posle postavljanja; K08 navodi u izveštaju.
+
+**Za Jovana ujutru:**
+- `npm run e2e` (sam gradi, diže 3241 i gasi ga; port 3241 mora biti slobodan). Traje ~3 min.
+- `docs/oemparts/merenja.md`: tabele i objašnjenje zašto Lighthouse na localhost-u daje 91–96. Posle postavljanja sajta pustiti PageSpeed Insights na `/` i `/asortiman/`.
+- Snimci `docs/oemparts/snimci/K07-*.png` (21 strana × 390 i 1440; na 390 je donja traka pomerena na dno strane samo za snimak).
+- Na telefonu: tap na „Sastavi poruku“ odmah posle kucanja u polju mora iz prvog pritiska da sastavi poruku ili pokaže sažetak grešaka; Shift+Tab kroz header ne sme da skroluje stranu.
+- Pretapanje auta na početnoj: rasklopljena slika se sada preuzima tek posle učitavanja strane. Ako se skroluje odmah po otvaranju, pretapanje kreće čim slika stigne.

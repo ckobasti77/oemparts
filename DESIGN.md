@@ -200,13 +200,13 @@ Radijus po ulozi: 6 px čipovi i oznake, 10 px dugmad i polja, 14 px kartice, re
 - **Spoljni link:** bilo koja varijanta + strelica ↗ i „(otvara se u novom prozoru)“ za čitače ekrana.
 
 ### Chips
-- **Style:** površina 2, mastilo 2, 6 px, visina 44 px; hover površina 3.
+- **Style:** površina 2, mastilo 2, 6 px, visina 44 px; hover i pritisak površina 3, pritisak spušta 1 px.
 - **State:** trenutni (`aria-current`) dobija narandžastu tamnu podlogu (#2a1a12) i mastilo 1. Oznake (nisu linkovi) 32 px.
 
 ### Cards / Containers
 - **Corner Style:** 14 px (panel), 20 px (istaknuti panel).
 - **Background:** površina 1; render na radijalnoj podlozi (#20252b → površina 1).
-- **Shadow Strategy:** Rest; na hover Raised + podizanje 2 px i render 1,03 (samo fini pokazivač).
+- **Shadow Strategy:** Rest; na hover Raised + podizanje 2 px i render 1,03 (samo fini pokazivač). Pritisak: površina 2 (i na dodir), a sa mišem kartica se spusti na −1 px.
 - **Border:** 1 px linija; na hover jaka linija.
 - **Internal Padding:** 16–24 px.
 
@@ -220,6 +220,17 @@ Radijus po ulozi: 6 px čipovi i oznake, 10 px dugmad i polja, 14 px kartice, re
 
 ### Disclosure (FAQ)
 - Native `<details>`; red 56 px, pitanje 18–20/600, strelica se okreće 180°; sadržaj ulazi opacity + 8 px (220 ms). Visina se ne animira.
+
+## Motion
+
+Izgrađeno (K02–K07), plan K01 §5:
+- **Reveal** (`components/motion/Reveal.tsx` + jedan `RevealEngine` u layout-u): blok ulazi opacity 0 → 1 i 16 px (12 ispod 768) → 0, 520 ms `expo.out`, kad mu sredina pređe liniju 18 % iznad dna; mreže i liste (`RevealGroup`) ulaze kao paket, 60 ms razmaka, najviše 180 ms. Koriste ga početna (sekcije 2–9), asortiman (sekcije i mreže), sistem (članci, saveti, susedni sistemi), vozila (redovi marki), saradnja i kako kupiti (koraci), o nama (`fade`). Ne koriste ga forma upita, kontakt, pravne strane, 404, header, meni, donja traka i footer.
+- **Ništa ne ostaje sakriveno:** sakriva se samo ono što je ceo ispod ekrana i tek kad GSAP stigne; preskočeno skokom, fokusom, štampom ili odlaskom sa strane odmah je vidljivo. Bez JS-a i pod `prefers-reduced-motion` ništa se ne sakriva i ništa ne pomera.
+- **GSAP se učitava posle `load` i prvog iscrtavanja** (`posleUcitavanja` u `components/motion/gsap.ts`), i samo gde treba: reveal samo na strani koja ima mete, meni samo ispod 1280 px, ScrollTrigger samo za hero na početnoj. Nikad nije u početnom JS-u ni ispred LCP-a.
+- **Hero:** rasklopljen auto se pretapa preko sklopljenog na skrol (ScrollTrigger, scrub 0,5); sklopljen (LCP) je uvek opacity 1 i `fetchpriority="high"`.
+- **Header:** posle 24 px skrola podloga (220 ms) i logo 1,06 → 1; bez GSAP-a. **Meni:** panel −8 px → 0 (280 ms) i stavke 30 ms razmaka; izlaz 180 ms; pod reduced motion samo opacity 120 ms.
+- **Hover i pritisak (CSS):** boje 80 ms linearno; dugmad i čipovi `translateY(1px)` 140 ms; kartice −2 px / −1 px na pritisak; tekst linkovi narandžasta podvlaka na hover i pritisak; redovi (meni, kanali, FAQ) površina 2 na hover i površina 3 na pritisak.
+- **Sidra i fokus** staju ispod lepljivog header-a preko `scroll-margin-top` na sadržaju (`main`, `footer`), ne `scroll-padding-top` na `html`: inače fokus na dugmetu u header-u skroluje stranu na vrh.
 
 ## Do's and Don'ts
 

@@ -1,8 +1,9 @@
 "use client";
 
 /**
- * Ulaz i izlaz panela menija (plan K01 §5.1, §5.3). GSAP se učitava lenjo, u mirovanju pregledača
- * (isti memoizovan uvoz kao RevealEngine). Dok ne stigne, panel se otvara i zatvara bez animacije.
+ * Ulaz i izlaz panela menija (plan K01 §5.1, §5.3). GSAP se učitava lenjo, posle prvog iscrtavanja
+ * i samo ispod 1280 px (isti memoizovan uvoz kao RevealEngine). Dok ne stigne, panel se otvara i
+ * zatvara bez animacije.
  *
  * - ulaz: panel opacity 0 → 1 i y −8 → 0 (280 ms, expo.out); stavke redom, 30 ms razmaka,
  *   poslednja najviše 150 ms posle prve;
@@ -13,13 +14,15 @@ import { useCallback, useEffect, useRef, type RefObject } from "react";
 
 import { DUR, EASE } from "@/lib/motion";
 
-import { loadGsap, prefersReducedMotion } from "./gsap";
+import { loadGsap, posleUcitavanja, prefersReducedMotion } from "./gsap";
 
 type Gsap = Awaited<ReturnType<typeof loadGsap>>;
 
 const STAVKE_KORAK_S = 0.03;
 const STAVKE_BUDZET_S = 0.15;
 const REDUCE_S = 0.12;
+/** Od ove širine navigacija je u header-u (isto kao MobileMenu). */
+const SIROKO = "(min-width: 80rem)";
 
 export function useSheetMotion(
   panel: RefObject<HTMLElement | null>,
@@ -35,12 +38,11 @@ export function useSheetMotion(
           if (ziv) gsapRef.current = g;
         })
         .catch(() => {});
-    const imaIdle = "requestIdleCallback" in window;
-    const id = imaIdle ? window.requestIdleCallback(ucitaj, { timeout: 2000 }) : window.setTimeout(ucitaj, 300);
+    // Od 1280 px meni se ne koristi, pa GSAP ne treba (K07).
+    const otkazi = window.matchMedia(SIROKO).matches ? () => {} : posleUcitavanja(ucitaj, 2000);
     return () => {
       ziv = false;
-      if (imaIdle) window.cancelIdleCallback(id);
-      else window.clearTimeout(id);
+      otkazi();
     };
   }, []);
 

@@ -11,14 +11,16 @@
  * - bez JS-a i pod `prefers-reduced-motion` overlay je skriven (`motion-reduce:hidden`, pa se lenja
  *   slika ni ne učita) i stoji `base`.
  *
- * GSAP i ScrollTrigger se učitavaju lenjo, posle prvog iscrtavanja.
+ * GSAP i ScrollTrigger se učitavaju lenjo, posle `load` i prvog iscrtavanja (`posleUcitavanja`).
+ * Tek tada se iscrtava i `overlay` (K07), pa njegova slika ne deli mrežu sa LCP slikom i JS-om
+ * pri učitavanju; pod reduced motion i bez JS-a se ne preuzima nikad.
  */
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 import { MEDIA } from "@/lib/motion";
 
-import { loadScrollTrigger } from "./gsap";
+import { loadScrollTrigger, posleUcitavanja } from "./gsap";
 
 const DESKTOP = `${MEDIA.desktop} and ${MEDIA.ok}`;
 const MOBILNI = `(max-width: 63.99rem) and ${MEDIA.ok}`;
@@ -34,6 +36,7 @@ export function ScrollCrossfade({
 }) {
   const okvir = useRef<HTMLDivElement>(null);
   const sloj = useRef<HTMLDivElement>(null);
+  const [aktivan, setAktivan] = useState(false);
 
   useEffect(() => {
     const el = okvir.current;
@@ -43,58 +46,62 @@ export function ScrollCrossfade({
     let ugaseno = false;
     let pocisti: (() => void) | null = null;
 
-    loadScrollTrigger()
-      .then(({ gsap, ScrollTrigger }) => {
-        if (ugaseno) return;
-        const mm = gsap.matchMedia();
-        const scope = el.closest<HTMLElement>("[data-crossfade-scope]") ?? el;
+    const otkazi = posleUcitavanja(() => {
+      setAktivan(true);
+      loadScrollTrigger()
+        .then(({ gsap, ScrollTrigger }) => {
+          if (ugaseno) return;
+          const mm = gsap.matchMedia();
+          const scope = el.closest<HTMLElement>("[data-crossfade-scope]") ?? el;
 
-        mm.add(DESKTOP, () => {
-          gsap.fromTo(
-            gornji,
-            { opacity: 0 },
-            {
-              opacity: 1,
-              ease: "none",
-              scrollTrigger: { trigger: scope, start: "top 64px", end: "+=60%", scrub: 0.5, invalidateOnRefresh: true },
-            },
-          );
+          mm.add(DESKTOP, () => {
+            gsap.fromTo(
+              gornji,
+              { opacity: 0 },
+              {
+                opacity: 1,
+                ease: "none",
+                scrollTrigger: { trigger: scope, start: "top 64px", end: "+=60%", scrub: 0.5, invalidateOnRefresh: true },
+              },
+            );
+          });
+          mm.add(MOBILNI, () => {
+            gsap.fromTo(
+              gornji,
+              { opacity: 0 },
+              {
+                opacity: 1,
+                ease: "none",
+                scrollTrigger: { trigger: el, start: "top 75%", end: "bottom 40%", scrub: 0.5, invalidateOnRefresh: true },
+              },
+            );
+          });
+
+          // Pozicije se računaju posle fontova i slike (rAF, jednom po talasu događaja).
+          let raf = 0;
+          const osvezi = () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+          };
+          document.fonts?.addEventListener("loadingdone", osvezi);
+          const slika = el.querySelector("img");
+          if (slika && !slika.complete) slika.addEventListener("load", osvezi, { once: true });
+
+          pocisti = () => {
+            cancelAnimationFrame(raf);
+            document.fonts?.removeEventListener("loadingdone", osvezi);
+            slika?.removeEventListener("load", osvezi);
+            mm.revert();
+          };
+        })
+        .catch(() => {
+          // Bez GSAP-a ostaje sklopljen auto; ništa nije sakriveno.
         });
-        mm.add(MOBILNI, () => {
-          gsap.fromTo(
-            gornji,
-            { opacity: 0 },
-            {
-              opacity: 1,
-              ease: "none",
-              scrollTrigger: { trigger: el, start: "top 75%", end: "bottom 40%", scrub: 0.5, invalidateOnRefresh: true },
-            },
-          );
-        });
-
-        // Pozicije se računaju posle fontova i slike (rAF, jednom po talasu događaja).
-        let raf = 0;
-        const osvezi = () => {
-          cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(() => ScrollTrigger.refresh());
-        };
-        document.fonts?.addEventListener("loadingdone", osvezi);
-        const slika = el.querySelector("img");
-        if (slika && !slika.complete) slika.addEventListener("load", osvezi, { once: true });
-
-        pocisti = () => {
-          cancelAnimationFrame(raf);
-          document.fonts?.removeEventListener("loadingdone", osvezi);
-          slika?.removeEventListener("load", osvezi);
-          mm.revert();
-        };
-      })
-      .catch(() => {
-        // Bez GSAP-a ostaje sklopljen auto; ništa nije sakriveno.
-      });
+    });
 
     return () => {
       ugaseno = true;
+      otkazi();
       pocisti?.();
     };
   }, []);
@@ -102,8 +109,13 @@ export function ScrollCrossfade({
   return (
     <div ref={okvir} className={cn("relative", className)}>
       {base}
-      <div ref={sloj} aria-hidden="true" className="absolute inset-0 opacity-0 motion-reduce:hidden">
-        {overlay}
+      <div
+        ref={sloj}
+        data-crossfade-overlay=""
+        aria-hidden="true"
+        className="absolute inset-0 opacity-0 motion-reduce:hidden"
+      >
+        {aktivan ? overlay : null}
       </div>
     </div>
   );

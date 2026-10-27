@@ -25,7 +25,7 @@ export function Disclosure({
   const Naslov = `h${headingLevel}` as "h3";
   return (
     <details className={cn("group border-b border-line", className)} open={open}>
-      <summary className="flex min-h-14 cursor-pointer items-center justify-between gap-4 px-3 py-3 transition-control hover:bg-surface-2">
+      <summary className="flex min-h-14 cursor-pointer items-center justify-between gap-4 px-3 py-3 transition-control hover:bg-surface-2 active:bg-surface-3">
         <Naslov className="type-h3 text-ink-1">{summary}</Naslov>
         <CaretDownIcon
           size={20}

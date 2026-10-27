@@ -13,12 +13,17 @@ import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({ ...asortimanStrana.meta, putanja: RUTE.asortiman });
 
+/** Broj rendera u prvom redu na telefonu (2 kolone). */
+const PRVI_RED = 2;
+
 /**
  * Asortiman (plan K01 §4.2): uvod, čipovi sistema, pa za svaki sistem sekcija sa naslovom,
  * opisom, linkom na stranu sistema i karticama grupa (2 / 3 / 5 kolona), na kraju CtaBand.
- * Svi renderi su `loading="lazy"` (ODLUKA K04): React 19 od `eager` slike pravi preload
+ * Renderi su `loading="lazy"` (ODLUKA K04): React 19 od `eager` slike pravi preload
  * nagoveštaj, a Next ga primenjuje i kad prefetch-uje ovu stranu sa drugih strana (link
  * „Asortiman“ u header-u), pa bi svaka strana preuzimala rendere koje ne prikazuje.
+ * Izuzetak (K07): prvi red prvog sistema je LCP na telefonu, pa ide odmah i sa visokim
+ * prioritetom, u `<picture>` (bez preload nagoveštaja, vidi `PartImage`).
  */
 export default function AsortimanPage() {
   const t = asortimanStrana;
@@ -28,7 +33,7 @@ export default function AsortimanPage() {
       <PageHeader naslov={t.naslov} uvod={t.uvod} putanja={[{ naziv: t.naslov, putanja: RUTE.asortiman }]} />
       <div className="px-page">
         <AnchorNav oznaka={t.brzaNavigacija} stavke={sistemi.map((s) => ({ href: `#${s.slug}`, naziv: s.naziv }))} />
-        {sistemi.map((s) => {
+        {sistemi.map((s, si) => {
           const grupe = grupeSistema(s.slug);
           return (
             <section
@@ -52,9 +57,9 @@ export default function AsortimanPage() {
                 </TextLink>
               </Reveal>
               <RevealGroup as="ul" className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-5">
-                {grupe.map((g) => (
+                {grupe.map((g, gi) => (
                   <RevealItem as="li" key={g.slug}>
-                    <GroupCard grupa={g} />
+                    <GroupCard grupa={g} prioritet={si === 0 && gi < PRVI_RED} />
                   </RevealItem>
                 ))}
               </RevealGroup>

@@ -25,7 +25,7 @@ export function ChannelList({ className }: { className?: string }) {
             <a
               href={k.href}
               {...(k.spoljni ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-              className="group flex min-h-16 items-center gap-4 rounded-sm px-4 py-2 transition-control hover:bg-surface-2"
+              className="group flex min-h-16 items-center gap-4 rounded-sm px-4 py-2 transition-control hover:bg-surface-2 active:bg-surface-3"
             >
               <span
                 aria-hidden="true"

@@ -177,13 +177,19 @@
     background: var(--color-bg);
     color: var(--color-ink-1);
     font-family: var(--font-sans);
-    scroll-padding-top: calc(var(--header-h) + 16px);
     scroll-padding-bottom: var(--bottom-bar-h);
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     scrollbar-color: var(--color-line-strong) transparent;
     accent-color: var(--color-accent);
+  }
+
+  /* Sidra i fokus u sadržaju staju ispod lepljivog header-a. Razmak je na sadržaju, a ne
+     `scroll-padding-top` na html-u: header je uvek na vrhu ekrana, pa bi fokus na njemu (Tab,
+     Shift+Tab, `focus()`) skrolovao stranu skoro do vrha (K07). */
+  :where(main, footer) * {
+    scroll-margin-top: calc(var(--header-h) + 16px);
   }
 
   /* Meni otvoren: strana se ne skroluje; prostor trake za skrol ostaje, pa se ništa ne pomera. */
@@ -426,7 +432,8 @@
   background: radial-gradient(circle at 50% 45%, var(--color-tile) 0%, var(--color-surface-1) 70%);
 }
 
-/* Kartica koja je link: ivica, površina i senka na hover; render se blago uvećava. */
+/* Kartica koja je link: ivica, površina i senka na hover; render se blago uvećava. Pritisak (K07):
+   na dodir površina potamni, a sa mišem se podignuta kartica spusti za 1 px. */
 @utility card-link {
   transition:
     border-color var(--dur-instant) linear,
@@ -446,9 +453,16 @@
     &:hover [data-card-media] {
       transform: scale(1.03);
     }
+    &:active {
+      transform: translateY(-1px);
+    }
+  }
+  &:active {
+    background-color: var(--color-surface-2);
   }
   @media (prefers-reduced-motion: reduce) {
     &:hover,
+    &:active,
     &:hover [data-card-media] {
       transform: none;
     }
@@ -463,7 +477,8 @@
   transition:
     text-decoration-color var(--dur-instant) linear,
     color var(--dur-instant) linear;
-  &:hover {
+  &:hover,
+  &:active {
     text-decoration-color: var(--color-accent);
   }
 }

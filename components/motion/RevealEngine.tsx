@@ -13,6 +13,7 @@
  *   elementu ga otkriva; pri štampi, promeni na reduced motion i odlasku sa strane sve je
  *   vidljivo; dno strane otkriva sve što je na ekranu.
  * - `prefers-reduced-motion: reduce`: ništa se ne sakriva i ništa se ne pomera.
+ * - GSAP se učitava tek posle `load` i prvog iscrtavanja (K07), i samo na strani koja ima mete.
  * - Sakriva se samo opacity (ne visibility), pa elementi ostaju fokusabilni.
  */
 import { usePathname } from "next/navigation";
@@ -20,7 +21,7 @@ import { useEffect } from "react";
 
 import { MEDIA, REVEAL, REVEAL_LINE, REVEAL_TALL, staggerDelayMs } from "@/lib/motion";
 
-import { loadGsap } from "./gsap";
+import { loadGsap, posleUcitavanja } from "./gsap";
 
 type Gsap = Awaited<ReturnType<typeof loadGsap>>;
 
@@ -47,7 +48,6 @@ export function RevealEngine(): null {
     let gsap: Gsap | null = null;
     let io: IntersectionObserver | null = null;
     let tajmer = 0;
-    let idle = 0;
     const cekaju = new Set<HTMLElement>();
     const vidjeni = new WeakSet<Element>();
     const sve: HTMLElement[] = [];
@@ -186,15 +186,13 @@ export function RevealEngine(): null {
       reduce.addEventListener("change", naReduce);
     };
 
-    // Safari nema requestIdleCallback.
-    const imaIdle = "requestIdleCallback" in window;
-    if (imaIdle) idle = window.requestIdleCallback(() => void pokreni(), { timeout: 1500 });
-    else idle = window.setTimeout(() => void pokreni(), 200);
+    // Strana bez meta (upit, kontakt, pravne strane, 404) ne učitava GSAP. Ostale ga učitavaju
+    // posle prvog iscrtavanja (K07), pa GSAP nikad nije ispred LCP-a.
+    const otkazi = mete().length > 0 ? posleUcitavanja(() => void pokreni()) : () => {};
 
     return () => {
       ugaseno = true;
-      if (imaIdle) window.cancelIdleCallback(idle);
-      else window.clearTimeout(idle);
+      otkazi();
       window.clearTimeout(tajmer);
       io?.disconnect();
       window.removeEventListener("scroll", naSkrol);

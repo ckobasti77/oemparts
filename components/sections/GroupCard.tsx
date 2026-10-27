@@ -7,8 +7,9 @@ import { grupaRuta } from "@/lib/routes";
 /**
  * Kartica grupe delova (asortiman): render 1:1 i naziv; kratak opis od 480 px. Cela kartica je
  * jedan link na članak grupe (`/asortiman/<sistem>/#<grupa>`). Hover kao `SystemCard`.
+ * `prioritet`: render je u prvom ekranu (LCP), vidi `PartImage`.
  */
-export function GroupCard({ grupa }: { grupa: Grupa }) {
+export function GroupCard({ grupa, prioritet = false }: { grupa: Grupa; prioritet?: boolean }) {
   return (
     <Link href={grupaRuta(grupa.sistem, grupa.slug)} className="flex h-full flex-col overflow-hidden panel card-link">
       <div className="tile-render overflow-hidden">
@@ -16,6 +17,7 @@ export function GroupCard({ grupa }: { grupa: Grupa }) {
           <PartImage
             slug={grupa.slug}
             alt=""
+            prioritet={prioritet}
             sizes="(min-width: 80rem) 244px, (min-width: 48rem) 30vw, 46vw"
           />
         </div>

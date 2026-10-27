@@ -42,6 +42,41 @@ export function loadScrollTrigger(): Promise<{ gsap: Gsap; ScrollTrigger: Scroll
   return scrollPromise;
 }
 
+/**
+ * Zakazuje posao (npr. učitavanje GSAP-a) posle `load` događaja i prvog iscrtavanja, u mirovanju
+ * pregledača (K07). Pokret nikad ne takmiči sa sadržajem strane: GSAP ne kreće pre LCP-a ni na
+ * brzoj mreži, gde bi async skripte inače stigle pre prvog iscrtavanja. Vraća otkazivanje.
+ */
+export function posleUcitavanja(posao: () => void, timeoutMs = 1500): () => void {
+  let otkazano = false;
+  let raf = 0;
+  let tajmer = 0;
+  let idle = 0;
+  const imaIdle = "requestIdleCallback" in window; // Safari nema requestIdleCallback
+  const pokreni = () => {
+    if (!otkazano) posao();
+  };
+  const zakazi = () => {
+    // Dva rAF-a: posao kreće tek kad je bar jedan frame iscrtan.
+    raf = requestAnimationFrame(() => {
+      raf = requestAnimationFrame(() => {
+        if (otkazano) return;
+        if (imaIdle) idle = window.requestIdleCallback(pokreni, { timeout: timeoutMs });
+        else tajmer = window.setTimeout(pokreni, 200);
+      });
+    });
+  };
+  if (document.readyState === "complete") zakazi();
+  else window.addEventListener("load", zakazi, { once: true });
+  return () => {
+    otkazano = true;
+    window.removeEventListener("load", zakazi);
+    cancelAnimationFrame(raf);
+    window.clearTimeout(tajmer);
+    if (imaIdle && idle) window.cancelIdleCallback(idle);
+  };
+}
+
 /** Da li je korisnik tražio manje pokreta (čita se u trenutku poziva). */
 export function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && window.matchMedia(MEDIA.reduce).matches;
