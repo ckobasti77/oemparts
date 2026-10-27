@@ -10,7 +10,7 @@ import * as saradnja from "@/content/saradnja";
 import { site } from "@/content/site";
 import * as stranice from "@/content/stranice";
 import * as upit from "@/content/upit";
-import { MARKE } from "@/content/vozila";
+import { MARKE, vozilaStrana } from "@/content/vozila";
 import * as pravno from "@/content/pravno";
 import { grupeSistema } from "@/lib/asortiman";
 
@@ -64,8 +64,58 @@ describe("asortiman: integritet", () => {
   });
 
   it("opisi grupa ne tvrde ništa o lageru (P5)", () => {
-    for (const t of stringovi(GRUPE)) {
-      expect(t).not.toMatch(/\b(većina|reparirane|na stanju|nove i)\b/i);
+    for (const t of stringovi([GRUPE, SISTEMI])) {
+      expect(t).not.toMatch(/\b(većina|reparirane|na stanju|nove i|lager)\b/i);
+    }
+  });
+});
+
+describe("asortiman: strana sistema (K04)", () => {
+  const reci = (t: string) => t.split(/\s+/).filter(Boolean).length;
+
+  it("svaka grupa pripada tačno jednom sistemu", () => {
+    for (const g of GRUPE) {
+      const sistemi = SISTEMI.filter((s) => grupeSistema(s.slug).some((x) => x.slug === g.slug));
+      expect(sistemi.map((s) => s.slug), g.slug).toEqual([g.sistem]);
+    }
+  });
+
+  it("uvod: 2–3 pasusa, ukupno 80–150 reči", () => {
+    for (const s of SISTEMI) {
+      expect(s.uvod.length, s.slug).toBeGreaterThanOrEqual(2);
+      expect(s.uvod.length, s.slug).toBeLessThanOrEqual(3);
+      const n = reci(s.uvod.join(" "));
+      expect(n, `${s.slug}: ${n} reči`).toBeGreaterThanOrEqual(80);
+      expect(n, `${s.slug}: ${n} reči`).toBeLessThanOrEqual(150);
+    }
+  });
+
+  it("šta navesti u upitu: 3–5 stavki, svaka je rečenica", () => {
+    for (const s of SISTEMI) {
+      expect(s.upitSaveti.length, s.slug).toBeGreaterThanOrEqual(3);
+      expect(s.upitSaveti.length, s.slug).toBeLessThanOrEqual(5);
+      for (const savet of s.upitSaveti) expect(savet, s.slug).toMatch(/^\p{Lu}.{8,}\.$/u);
+    }
+  });
+
+  it("tekst strane sistema ima bar 200 reči (cilj 250; ispod cilja samo upozorenje)", () => {
+    for (const s of SISTEMI) {
+      const tekst = [
+        s.naziv,
+        ...s.uvod,
+        ...s.upitSaveti,
+        ...grupeSistema(s.slug).flatMap((g) => [
+          g.naziv,
+          g.kratko,
+          g.staRadi,
+          g.kadaSeMenja,
+          g.savet,
+          ...(g.podgrupe ?? []).flatMap((p) => [p.naziv, p.kratko]),
+        ]),
+      ].join(" ");
+      const n = reci(tekst);
+      expect(n, `${s.slug}: ${n} reči`).toBeGreaterThanOrEqual(200);
+      if (n < 250) console.warn(`[sadrzaj] ${s.slug}: ${n} reči na strani sistema (cilj ≥ 250)`);
     }
   });
 });
@@ -81,16 +131,21 @@ describe("marke i modeli", () => {
 });
 
 describe("tekstovi sajta: bez izmišljenih činjenica (P5) i placeholder teksta", () => {
-  const sajt = stringovi([site.opis, pocetna, kupovina, saradnja, navigacija, upit, stranice]);
+  const sajt = stringovi([site.opis, pocetna, kupovina, saradnja, navigacija, upit, stranice, vozilaStrana]);
+  // Uvodi, saveti i meta opisi sistema (K04) prolaze iste provere kao tekstovi sajta.
+  const sistemi = stringovi(SISTEMI.map((s) => [s.opis, s.uvod, s.upitSaveti, s.metaOpis]));
   const sve = [...sajt, ...stringovi(pravno), ...stringovi(GRUPE), ...stringovi(SISTEMI)];
 
   it("bez godina, rokova, procenata i cena", () => {
-    for (const t of sajt) expect(t, t).not.toMatch(/\b\d+\s*(godin|god\.|dana|sati|%|rsd|din\b|€|eur\b)/i);
+    for (const t of [...sajt, ...sistemi])
+      expect(t, t).not.toMatch(/\b\d+\s*(godin|god\.|dana|sati|%|rsd|din\b|€|eur\b)/i);
   });
 
   it("bez obećanja i marketinških fraza", () => {
-    for (const t of sajt)
-      expect(t, t).not.toMatch(/garancij|popust|rabat|besplatn|najbolj|najjeftin|najbrž|brza dostava|hiljad|zadovoljn/i);
+    for (const t of [...sajt, ...sistemi, ...stringovi(GRUPE)])
+      expect(t, t).not.toMatch(
+        /garancij|popust|rabat|besplatn|najbolj|najjeftin|najbrž|brza dostava|hiljad|zadovoljn|jeftin/i,
+      );
   });
 
   it("bez lorem, TODO, TBD, undefined i null", () => {

@@ -40,6 +40,27 @@ describe("naslov strane", () => {
     expect(new Set(naslovi).size).toBe(naslovi.length);
     for (const n of naslovi) expect(n.length, n).toBeLessThanOrEqual(NASLOV_MAX);
   });
+
+  it("svi meta opisi strana su jedinstveni; opisi sistema 120–160 znakova", () => {
+    const opisi = [
+      pocetna.meta.opis,
+      asortimanStrana.meta.opis,
+      ...SISTEMI.map((s) => s.metaOpis),
+      vozilaStrana.meta.opis,
+      upitStrana.meta.opis,
+      saradnjaStrana.meta.opis,
+      oNamaStrana.meta.opis,
+      kupovinaStrana.meta.opis,
+      kontaktStrana.meta.opis,
+      POLITIKA_PRIVATNOSTI.meta.opis,
+      USLOVI_KORISCENJA.meta.opis,
+    ];
+    expect(new Set(opisi).size).toBe(opisi.length);
+    for (const s of SISTEMI) {
+      expect(s.metaOpis.length, s.slug).toBeGreaterThanOrEqual(120);
+      expect(s.metaOpis.length, s.slug).toBeLessThanOrEqual(160);
+    }
+  });
 });
 
 describe("pageMetadata", () => {

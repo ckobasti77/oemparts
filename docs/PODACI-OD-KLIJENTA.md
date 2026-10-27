@@ -33,7 +33,9 @@ Pravilo P5: sajt ne navodi godine rada, broj artikala, rokove isporuke, garancij
 | Povrat, reklamacija, garancija | `content/kupovina.ts`, `content/pravno.ts` | Sada: „javite nam se telefonom ili mejlom“. |
 | Uslovi saradnje za servise (rabat, popusti, odloženo plaćanje, račun) | `content/saradnja.ts` | Ništa od toga se ne obećava dok se ne potvrdi. |
 | Spisak marki i modela | `content/vozila.ts` | Godine i generacije namerno nisu navedene. |
-| Tehnički saveti u opisima grupa delova (pregled majstora) | `content/asortiman.ts` | Ispravljeno: zimske gume (bez brojke), DSG ulje, turbina, kod motora. |
+| Tehnički saveti u opisima grupa delova (pregled majstora) | `content/asortiman.ts` | Ispravljeno: zimske gume (bez brojke), DSG ulje, turbina, kod motora. K04 je ublažio i: kaiš alternatora, nosače motora, kvačilo, manžetnu poluosovine, akumulator, farove, kočionu tečnost (bez intervala), pločice (bez „3 mm“). |
+| Tehničke brojke i oznake koje ostaju u tekstu | `content/asortiman.ts` | Proveriti: „oko 14 V“ (alternator), „288 ili 312 mm“ (diskovi), „G12 ili G13“ (rashladna tečnost), „504 00/507 00“ (ulje), greška „P2015“ (klapne usisne grane), „205/55 R16“ (primer dimenzije). |
+| Uvodi sistema i „Šta da navedete u upitu“ (10 strana sistema) | `content/asortiman.ts` → `SISTEMI[].uvod`, `upitSaveti` | Opisuju šta sistem obuhvata i šta poslati u upitu; bez tvrdnji o lageru, rokovima i cenama. Potvrditi da firma zaista nudi sve navedene grupe (npr. felne i gume, stakla, karoserijske delove). |
 | Pravna provera politike privatnosti i uslova korišćenja | `content/pravno.ts` | Tekst je kratak i opisuje sajt bez naloga, prodaje i kolačića. |
 
 ## 3. Kanali i brend

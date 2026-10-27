@@ -17,11 +17,17 @@ export const MARKE: readonly Marka[] = [
 export const vozilaStrana = {
   meta: {
     naslov: "Delovi po markama i modelima VW grupe",
-    opis: "Delovi za Volkswagen, Audi, Škoda, SEAT i Cupra: Golf, Passat, Octavia, A4, Leon i drugi modeli. Proverite deo po broju šasije pre kupovine.",
+    opis: "Delovi za Volkswagen, Audi, Škoda, SEAT i Cupra: Golf, Passat, Octavia, A4, Leon i drugi modeli. Pošaljite broj šasije i proverićemo deo pre ponude.",
   },
   naslov: "Marke i modeli",
   uvod:
     "Delove nabavljamo za vozila pet marki VW grupe. Spisak modela nije potpun: ako vaš model nije naveden, pošaljite broj šasije i proverićemo.",
+  /** Oznaka liste modela za čitače ekrana: „Modeli: Volkswagen“. */
+  modeli: "Modeli",
   napomenaZigovi:
     "Volkswagen, Audi, Škoda, SEAT i Cupra su žigovi svojih vlasnika. Nazive marki koristimo samo da označimo vozila kojima su delovi namenjeni.",
+  cta: {
+    naslov: "Vašeg modela nema na spisku?",
+    tekst: "Isti model ima više generacija, motora i opreme. Pošaljite broj šasije i šta vam treba, pa ćemo proveriti deo za baš vaše vozilo.",
+  },
 };

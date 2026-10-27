@@ -1,57 +1,68 @@
-import Link from "next/link";
-
+import { AnchorNav } from "@/components/layout/AnchorNav";
 import { CtaBand } from "@/components/layout/CtaBand";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Section } from "@/components/layout/Section";
-import { ChipLink } from "@/components/ui/Chip";
-import { CTA } from "@/content/navigacija";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { GroupCard } from "@/components/sections/GroupCard";
+import { TextLink } from "@/components/ui/TextLink";
 import { SISTEMI } from "@/content/asortiman";
+import { CTA } from "@/content/navigacija";
 import { asortimanStrana } from "@/content/stranice";
-import { grupeSistema } from "@/lib/asortiman";
-import { RUTE, grupaRuta, sistemRuta } from "@/lib/routes";
+import { brojGrupa, grupeSistema } from "@/lib/asortiman";
+import { RUTE, sistemRuta } from "@/lib/routes";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({ ...asortimanStrana.meta, putanja: RUTE.asortiman });
 
-/** Asortiman (osnova iz K02; K04 dodaje rendere i kartice grupa). */
+/**
+ * Asortiman (plan K01 §4.2): uvod, čipovi sistema, pa za svaki sistem sekcija sa naslovom,
+ * opisom, linkom na stranu sistema i karticama grupa (2 / 3 / 5 kolona), na kraju CtaBand.
+ * Svi renderi su `loading="lazy"` (ODLUKA K04): React 19 od `eager` slike pravi preload
+ * nagoveštaj, a Next ga primenjuje i kad prefetch-uje ovu stranu sa drugih strana (link
+ * „Asortiman“ u header-u), pa bi svaka strana preuzimala rendere koje ne prikazuje.
+ */
 export default function AsortimanPage() {
+  const t = asortimanStrana;
+  const sistemi = [...SISTEMI].sort((a, b) => a.redosled - b.redosled);
   return (
     <>
-      <PageHeader
-        naslov={asortimanStrana.naslov}
-        uvod={asortimanStrana.uvod}
-        putanja={[{ naziv: asortimanStrana.naslov, putanja: RUTE.asortiman }]}
-      />
-      <nav aria-label={asortimanStrana.brzaNavigacija} className="px-page">
-        <ul className="flex flex-wrap gap-2">
-          {SISTEMI.map((s) => (
-            <li key={s.slug}>
-              <ChipLink href={`#${s.slug}`}>{s.naziv}</ChipLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      {SISTEMI.map((s) => (
-        <Section
-          key={s.slug}
-          id={s.slug}
-          naslov={s.naziv}
-          uvod={s.opis}
-          akcija={
-            <Link href={sistemRuta(s.slug)} className="inline-flex min-h-11 items-center link-underline">
-              {CTA.sveOSistemu}: {s.naziv}
-            </Link>
-          }
-        >
-          <ul className="flex flex-wrap gap-2">
-            {grupeSistema(s.slug).map((g) => (
-              <li key={g.slug}>
-                <ChipLink href={grupaRuta(s.slug, g.slug)}>{g.naziv}</ChipLink>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      ))}
+      <PageHeader naslov={t.naslov} uvod={t.uvod} putanja={[{ naziv: t.naslov, putanja: RUTE.asortiman }]} />
+      <div className="px-page">
+        <AnchorNav oznaka={t.brzaNavigacija} stavke={sistemi.map((s) => ({ href: `#${s.slug}`, naziv: s.naziv }))} />
+        {sistemi.map((s) => {
+          const grupe = grupeSistema(s.slug);
+          return (
+            <section
+              key={s.slug}
+              id={s.slug}
+              aria-labelledby={`${s.slug}-naslov`}
+              className="mt-12 border-t border-line pt-8 lg:mt-16 lg:pt-10"
+            >
+              <Reveal className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-8">
+                <div className="max-w-[60ch]">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h2 id={`${s.slug}-naslov`} className="type-h2 text-ink-1">
+                      {s.naziv}
+                    </h2>
+                    <span className="type-caption text-ink-3">{brojGrupa(grupe.length)}</span>
+                  </div>
+                  <p className="mt-2 text-ink-2">{s.opis}</p>
+                </div>
+                <TextLink href={sistemRuta(s.slug)} arrow className="shrink-0">
+                  {CTA.sveOSistemu}: {s.naziv}
+                </TextLink>
+              </Reveal>
+              <RevealGroup as="ul" className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-5">
+                {grupe.map((g) => (
+                  <RevealItem as="li" key={g.slug}>
+                    <GroupCard grupa={g} />
+                  </RevealItem>
+                ))}
+              </RevealGroup>
+            </section>
+          );
+        })}
+        <p className="mt-6 type-caption text-ink-3">{t.napomenaSlike}</p>
+      </div>
       <CtaBand />
     </>
   );

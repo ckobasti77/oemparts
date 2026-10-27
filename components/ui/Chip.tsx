@@ -22,6 +22,7 @@ export function ChipLink({
       className={cn(
         "inline-flex min-h-11 shrink-0 items-center rounded-xs bg-surface-2 px-3 type-body-s text-ink-2 transition-control",
         "hover:bg-surface-3 hover:text-ink-1 aria-[current=page]:bg-accent-subtle aria-[current=page]:text-ink-1",
+        "aria-[current=page]:shadow-[inset_0_-2px_0_var(--color-accent)]",
         className,
       )}
     >

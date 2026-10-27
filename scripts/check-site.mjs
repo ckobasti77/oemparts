@@ -155,6 +155,12 @@ async function main() {
   const htmlPoRuti = new Map(fajlovi.map((f) => [rutaFajla(f), readFileSync(f, "utf8")]));
   const domenHost = new URL(site.domen).host;
   const velicine = [];
+  // title i description javnih strana moraju biti jedinstveni (K04: 10 strana sistema)
+  const naslovi = new Map();
+  const opisi = new Map();
+  const zapamti = (mapa, vrednost, ruta) => {
+    if (vrednost) mapa.set(vrednost, [...(mapa.get(vrednost) ?? []), ruta]);
+  };
 
   for (const [ruta, html] of htmlPoRuti) {
     const javna = rute.includes(ruta);
@@ -172,6 +178,8 @@ async function main() {
     if (javna) {
       const desc = html.match(/<meta name="description" content="([^"]*)"/)?.[1]?.trim();
       if (!desc) greska(ruta, "nema meta description");
+      zapamti(opisi, desc, ruta);
+      zapamti(naslovi, html.match(/<title>([^<]*)<\/title>/)?.[1]?.trim(), ruta);
       const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1];
       if (!canonical) greska(ruta, "nema canonical");
       else {
@@ -283,6 +291,13 @@ async function main() {
       velicine.push({ ruta, html: gzipSync(html).length, js: gz(skripte), css: gz(stilovi) });
     }
   }
+
+  for (const [vrsta, mapa] of [
+    ["title", naslovi],
+    ["description", opisi],
+  ])
+    for (const strane of mapa.values())
+      if (strane.length > 1) greska(strane.join(", "), `isti ${vrsta} na ${strane.length} strane`);
 
   // sitemap (ako postoji) ne sme da sadrži dev-only rute
   const sitemap = path.join(OUT, "sitemap.xml");

@@ -1,38 +1,46 @@
 import { CtaBand } from "@/components/layout/CtaBand";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
-import { Tag } from "@/components/ui/Chip";
+import { Reveal } from "@/components/motion/Reveal";
 import { MARKE, vozilaStrana } from "@/content/vozila";
 import { RUTE } from "@/lib/routes";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({ ...vozilaStrana.meta, putanja: RUTE.vozila });
 
-/** Marke i modeli, samo tekstom (P6). Osnova iz K02; K04 dovršava. */
+/**
+ * Marke i modeli (plan K01 §4.4), samo tekstom (P6): bez logotipa, boja, godina i kodova.
+ * Pet marki je jedan panel sa redovima (ime levo, modeli desno), kao tehnički list; `id` reda
+ * je slug marke (sidra sa početne). Modeli su običan tekst, ne oznake: oznaka nalik čipu bi
+ * izgledala kao link, a nije (ODLUKA K04). Na kraju napomena o žigovima i poziv na upit.
+ */
 export default function VozilaPage() {
+  const t = vozilaStrana;
   return (
     <>
-      <PageHeader
-        naslov={vozilaStrana.naslov}
-        uvod={vozilaStrana.uvod}
-        putanja={[{ naziv: vozilaStrana.naslov, putanja: RUTE.vozila }]}
-      />
-      <RevealGroup as="ul" className="grid gap-4 px-page md:grid-cols-2">
-        {MARKE.map((m) => (
-          <RevealItem as="li" key={m.slug} id={m.slug} className="panel p-6">
-            <h2 className="type-display-m text-ink-1">{m.naziv}</h2>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {m.modeli.map((model) => (
-                <li key={model}>
-                  <Tag>{model}</Tag>
-                </li>
-              ))}
-            </ul>
-          </RevealItem>
-        ))}
-      </RevealGroup>
-      <p className="mt-6 max-w-[90ch] px-page type-body-s text-ink-3">{vozilaStrana.napomenaZigovi}</p>
-      <CtaBand />
+      <PageHeader naslov={t.naslov} uvod={t.uvod} putanja={[{ naziv: t.naslov, putanja: RUTE.vozila }]} />
+      <div className="px-page">
+        <Reveal as="ul" className="divide-y divide-line panel">
+          {MARKE.map((m) => (
+            <li
+              key={m.slug}
+              id={m.slug}
+              className="grid gap-4 p-5 md:grid-cols-12 md:items-center md:gap-x-[var(--gutter)] md:px-8 md:py-7"
+            >
+              <h2 className="type-display-m text-ink-1 md:col-span-4">{m.naziv}</h2>
+              <ul
+                aria-label={`${t.modeli}: ${m.naziv}`}
+                className="flex flex-wrap gap-x-6 gap-y-1 type-lead md:col-span-8"
+              >
+                {m.modeli.map((model) => (
+                  <li key={model}>{model}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </Reveal>
+        <p className="mt-6 max-w-[68ch] type-body-s text-ink-3">{t.napomenaZigovi}</p>
+      </div>
+      <CtaBand naslov={t.cta.naslov} tekst={t.cta.tekst} />
     </>
   );
 }

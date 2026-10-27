@@ -10,12 +10,30 @@ export const asortimanStrana = {
   },
   naslov: "Asortiman",
   uvod: "Delovi za vozila VW grupe, podeljeni u deset sistema i 44 grupe. Izaberite sistem da vidite šta deo radi i kada se menja.",
-  grupeNaslov: "Grupe delova",
   brzaNavigacija: "Sistemi delova",
+  /** Napomena uz rendere: ilustracije grupa, ne fotografije artikala. */
+  napomenaSlike: "Slike su 3D prikazi grupa delova, a ne fotografije konkretnih artikala.",
+  /** Alt rendera u članku grupe: „3D prikaz: Kočioni diskovi“. */
+  prikaz: "3D prikaz",
+  // Strana sistema
+  sistemNaslovSufiks: " — delovi za vozila VW grupe",
+  grupeNavigacija: "Grupe delova u sistemu",
   staRadi: "Šta radi",
   kadaSeMenja: "Kada se menja",
   savet: "Savet",
-  sistemNaslovSufiks: " — delovi za vozila VW grupe",
+  podgrupe: "Šta je u grupi",
+  upitSaveti: "Šta da navedete u upitu",
+  panel: {
+    naslov: "Proverite deo po broju šasije",
+    tekst: "Pošaljite broj šasije i šta vam treba. Proverićemo deo i javiti vam ponudu.",
+    iliPozovite: "Ili pozovite",
+  },
+  susedni: {
+    naslov: "Ostali sistemi",
+    prethodni: "Prethodni sistem",
+    sledeci: "Sledeći sistem",
+    svi: "Svi sistemi delova",
+  },
 };
 
 export const oNamaStrana = {
