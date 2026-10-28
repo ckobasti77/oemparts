@@ -204,6 +204,7 @@ export function UpitForma({
         {pokusano && listaGresaka.length > 0 ? (
           <div
             ref={sazetak}
+            role="group"
             tabIndex={-1}
             aria-labelledby="upit-sazetak-naslov"
             className="rounded-md border border-danger bg-danger-subtle p-4 md:p-5"
@@ -439,6 +440,11 @@ export function UpitForma({
               status ? (status.ok ? "text-ink-1" : "text-danger") : "text-ink-3",
             )}
           >
+            {status && !status.ok ? (
+              <span aria-hidden="true" className="mr-2 inline-flex align-[-0.2em]">
+                {ikone.upozorenje}
+              </span>
+            ) : null}
             {status?.tekst ?? ""}
           </p>
         </section>

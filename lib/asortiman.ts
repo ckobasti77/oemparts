@@ -6,10 +6,6 @@ export function sistemPoSlugu(slug: string): Sistem | undefined {
   return SISTEMI.find((s) => s.slug === slug);
 }
 
-export function grupaPoSlugu(slug: string): Grupa | undefined {
-  return GRUPE.find((g) => g.slug === slug);
-}
-
 export function grupeSistema(slug: SistemSlug): Grupa[] {
   return GRUPE.filter((g) => g.sistem === slug);
 }

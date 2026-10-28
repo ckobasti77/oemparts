@@ -33,6 +33,14 @@ const eslintConfig = defineConfig([
           ],
         },
       ],
+      // Isto i za lenji uvoz `import("gsap")`, koji no-restricted-imports ne vidi (K08).
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "ImportExpression[source.value=/^@?gsap/]",
+          message: "GSAP samo kroz components/motion/ (pravila runa).",
+        },
+      ],
     },
   },
 ]);

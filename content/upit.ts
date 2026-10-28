@@ -58,7 +58,7 @@ export const UPIT_GRESKE = {
   vinPredlog: "Da li ste mislili na {predlog}?",
   /** Dugme ispod polja kad postoji predlog: upisuje ispravljen broj. */
   vinPrimeni: "Upiši {predlog}",
-  vinZnakovi: "Broj šasije sadrži samo slova i brojeve.",
+  vinZnakovi: "Broj šasije sadrži samo slova A–Z i cifre 0–9.",
   modelPrazno: "Upišite model vozila.",
   deoPrazno: "Napišite koji deo vam treba ili opišite kvar.",
   predugo: "Tekst je predug. Najviše {max} znakova.",
@@ -88,7 +88,7 @@ export const UPIT_SLANJE = {
   nijeKopirano: "Kopiranje nije uspelo. Označite tekst poruke i kopirajte ga ručno.",
   viberNapomena: "Poruka je kopirana. Ako se ne pojavi u Viberu, nalepite je u razgovor.",
   objasnjenje:
-    "Klikom se otvara aplikacija na vašem telefonu ili računaru, sa porukom spremnom za slanje. Sajt ništa ne šalje i ne čuva — poruku šaljete vi.",
+    "Klikom se otvara aplikacija na vašem telefonu ili računaru, obično sa porukom spremnom za slanje. Sajt ništa ne šalje i ne čuva — poruku šaljete vi.",
   izmena: "Ako izmenite polja, poruka i linkovi se odmah menjaju.",
   /** `{kanali}`: svi kanali sa vrednošću, u instrumentalu. */
   bezJs: "Za sastavljanje poruke potreban je JavaScript. Javite nam se direktno {kanali}.",

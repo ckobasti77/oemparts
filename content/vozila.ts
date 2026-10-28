@@ -28,6 +28,6 @@ export const vozilaStrana = {
     "Volkswagen, Audi, Škoda, SEAT i Cupra su žigovi svojih vlasnika. Nazive marki koristimo samo da označimo vozila kojima su delovi namenjeni.",
   cta: {
     naslov: "Vašeg modela nema na spisku?",
-    tekst: "Isti model ima više generacija, motora i opreme. Pošaljite broj šasije i šta vam treba, pa ćemo proveriti deo za baš vaše vozilo.",
+    tekst: "Isti model ima više generacija, motora i opreme. Pošaljite broj šasije i šta vam treba, pa ćemo proveriti deo baš za vaše vozilo.",
   },
 };

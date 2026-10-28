@@ -1,9 +1,8 @@
-import { ClockIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
-
 import { ContactChannels } from "@/components/layout/ContactChannels";
+import { RadnoVremeAdresa } from "@/components/layout/RadnoVremeAdresa";
 import { Reveal } from "@/components/motion/Reveal";
 import { TextLink } from "@/components/ui/TextLink";
-import { CTA, FOOTER } from "@/content/navigacija";
+import { CTA } from "@/content/navigacija";
 import { pocetna } from "@/content/pocetna";
 import { site } from "@/content/site";
 import { adresaTekst, formatRadnoVreme } from "@/lib/format";
@@ -28,28 +27,7 @@ export function Kontakt() {
         </Reveal>
         <Reveal className="lg:col-span-7">
           <ContactChannels bezKp />
-          {radnoVreme || adresa ? (
-            <dl className="mt-6 grid gap-3 type-body-s text-ink-2 sm:grid-cols-2">
-              {radnoVreme ? (
-                <div className="flex gap-3">
-                  <ClockIcon size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
-                  <div>
-                    <dt className="sr-only">{FOOTER.radnoVreme}</dt>
-                    <dd>{radnoVreme}</dd>
-                  </div>
-                </div>
-              ) : null}
-              {adresa ? (
-                <div className="flex gap-3">
-                  <MapPinIcon size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
-                  <div>
-                    <dt className="sr-only">{FOOTER.adresa}</dt>
-                    <dd>{adresa}</dd>
-                  </div>
-                </div>
-              ) : null}
-            </dl>
-          ) : null}
+          <RadnoVremeAdresa radnoVreme={radnoVreme} adresa={adresa} className="mt-6 grid gap-3 sm:grid-cols-2" />
         </Reveal>
       </div>
     </section>

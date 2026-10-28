@@ -56,6 +56,12 @@ export const CTA = {
   sveOSistemu: "Sve o sistemu",
 };
 
+/** Podrazumevani tekst trake sa pozivom na kraju strane (CtaBand). */
+export const CTA_TRAKA = {
+  naslov: "Ne nalazite deo?",
+  tekst: "Pošaljite broj šasije i šta vam treba. Proverićemo deo i javiti vam ponudu.",
+};
+
 /** Oznake kanala za kontakt. */
 export const KANALI = {
   telefon: "Telefon",
@@ -91,7 +97,6 @@ export const BRZE_AKCIJE = {
 export const ARIA = {
   preskoci: "Preskoči na sadržaj",
   glavnaNavigacija: "Glavna navigacija",
-  podnozje: "Podnožje",
   pravno: "Pravne informacije",
   brzeAkcije: "Brze akcije",
   putanja: "Putanja",

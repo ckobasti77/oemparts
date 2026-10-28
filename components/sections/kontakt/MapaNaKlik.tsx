@@ -4,10 +4,10 @@
  * Mapa na klik (P3, plan K01 §4.9): dok se ne klikne, nema nijednog zahteva ka Google-u — ni
  * iframe-a, ni slike, ni skripte. Klik ubacuje iframe i prebacuje fokus na njega. Adresa je
  * iznad, u naslovu bloka; ovde ide samo u naslov iframe-a. Link
- * „Otvori u Google mapama“ je uvek pored, kao običan link (server ga crta).
+ * „Otvori u Google mapama“ je uvek pored, kao običan link (server ga crta). Ikonu crta server i
+ * šalje kao prop, kao u formi upita (ODLUKA K05: Phosphor ikona u klijentu nosi svih šest težina).
  */
-import { useEffect, useRef, useState } from "react";
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { mapaEmbedSrc } from "@/lib/links";
@@ -16,11 +16,14 @@ export function MapaNaKlik({
   upit,
   adresa,
   oznake,
+  ikona,
 }: {
   /** Upit za Google mape (adresa ili naziv radnje). */
   upit: string;
   adresa: string;
   oznake: { prikazi: string; napomena: string; naslov: string };
+  /** Ikona čiode (24 px), sa servera. */
+  ikona: ReactNode;
 }) {
   const [ucitana, setUcitana] = useState(false);
   const okvir = useRef<HTMLIFrameElement>(null);
@@ -52,7 +55,7 @@ export function MapaNaKlik({
               aria-hidden="true"
               className="flex size-12 items-center justify-center rounded-sm border border-line-strong bg-surface-2 text-ink-1"
             >
-              <MapPinIcon size={24} />
+              {ikona}
             </span>
             <Button variant="secondary" onClick={() => setUcitana(true)}>
               {oznake.prikazi}

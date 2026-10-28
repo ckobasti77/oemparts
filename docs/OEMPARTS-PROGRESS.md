@@ -559,3 +559,107 @@ Početni JS (gzip): 138,8 KB na većini strana, `/` 139,7, `/kontakt/` 142,6, `/
 - Snimci `docs/oemparts/snimci/K07-*.png` (21 strana × 390 i 1440; na 390 je donja traka pomerena na dno strane samo za snimak).
 - Na telefonu: tap na „Sastavi poruku“ odmah posle kucanja u polju mora iz prvog pritiska da sastavi poruku ili pokaže sažetak grešaka; Shift+Tab kroz header ne sme da skroluje stranu.
 - Pretapanje auta na početnoj: rasklopljena slika se sada preuzima tek posle učitavanja strane. Ako se skroluje odmah po otvaranju, pretapanje kreće čim slika stigne.
+
+## K08 — Revizija, izveštaj i predaja   (2026-10-28 01:15)
+**Fajlovi:**
+- Novo: `components/layout/RadnoVremeAdresa.tsx`, `tests/unit/radno-vreme-adresa.test.ts`, `docs/OEMPARTS-REPORT.md`, `.nvmrc`, snimci `docs/oemparts/snimci/K08-{pocetna,asortiman,sistem-kocnice,vozila,upit,saradnja,kontakt}-{390,1440}.png` (14).
+- Izmenjeno:
+  - sadržaj: `content/{asortiman,navigacija,pocetna,pravno,saradnja,stranice,upit,vozila}.ts`;
+  - komponente: `components/layout/{AnchorNav,ChannelList,CtaBand,Footer,PageHeader}.tsx`, `components/sections/{GroupCard,Koraci,SystemCard}.tsx`, `components/sections/home/{Kontakt,KakoKupiti,Zasto}.tsx`, `components/sections/kontakt/MapaNaKlik.tsx`, `components/sections/upit/UpitForma.tsx`, `components/ui/{Field,PartImage}.tsx`, `app/{kontakt,o-nama}/page.tsx`;
+  - `lib/{asortiman,jsonld}.ts`, `scripts/{og,serve-out}.mjs`, `eslint.config.mjs`, `tsconfig.json`;
+  - testovi: `tests/unit/{upit,seo-rute}.test.ts` (samo očekivane vrednosti za izmenjen tekst);
+  - `public/og/{pocetna,asortiman-elektrika-i-svetla,asortiman-vesanje-i-upravljanje,asortiman-servis}.png`;
+  - `README.md` (prepisan, srpski), `docs/PODACI-OD-KLIJENTA.md` (prepisan, po polju).
+
+**Šta je urađeno:**
+- **Revizija `git diff master...HEAD`** po oblastima: pet radnika (Sonnet) je paralelno pregledalo tekst (dva dela), kod, bezbednost i statički izvoz, i snimke K07. Svaki nalaz sam proverio u kodu, na snimku (isečci) ili merenjem pre nego što sam ga upisao ili popravio.
+- **Strane i linkovi:** `npm run preview` na 3241 (49 provera): 20 javnih strana 200, 19 adresa bez „/“ → 308 na adresu sa „/“, nepostojeće → 404 sa statusom 404, sitemap, robots, manifest, ikonice i OG 200. `/stil/` u izvozu ima prazan `<main>` (i prazan RSC), `noindex`, nije u sitemap-u i niko ne linkuje na njega. U izvozu: 1132 interna linka, svi sa „/“, svi ciljevi i sidra postoje; 178 spoljnih, svi sa `target="_blank"` i `rel="noopener noreferrer"`.
+- **Bezbednost:** 0 tajni (777 fajlova i istorija), 0 lokalnih putanja i source map-a u `out/`, forma ništa ne šalje (samo `preventDefault`, bez `fetch` i skladišta), 0 zahteva ka tuđim domenima pri učitavanju, JSON-LD zamenjuje `<`. `npm audit`: 0 ranjivosti (provereno i lično).
+- **Popravke:** 11 srednjih i 23 niske stavke (lista ispod). Najvažnija je latentna a11y greška u bloku „radno vreme i adresa“, koja bi oborila axe na svim stranama čim klijent upiše adresu.
+- **Impeccable audit** (posle popravki): pristupačnost 4, performanse 3, responsive 4, tema 4, integritet 3 = **18/20**. Detektor: izvor 0 nalaza, izvezeni HTML 0 (ograničen režim, bez HTML parsera).
+- **Predaja:** `README.md` (pokretanje, `content/site.ts`, build, preview, cPanel, Netlify, Cloudflare Pages, Vercel, zaglavlja, domen i provera posle objave), `docs/PODACI-OD-KLIJENTA.md` (svaki privremeni podatak i svaka tvrdnja sa fajlom i poljem), `docs/OEMPARTS-REPORT.md`, 14 završnih snimaka.
+
+**Lista nalaza** (ozbiljnost · fajl · ishod). Kritičnih nalaza nema.
+
+*Srednje (11, svi popravljeni):*
+1. `components/layout/Footer.tsx`, `components/sections/home/Kontakt.tsx` — nevažeći `<dl>` (ikona i `div` između `dl` i `dt/dd`): axe `dlitem` i `definition-list` bi pali na svim stranama čim se upiše radno vreme ili adresa. **Popravljeno:** zajednička `RadnoVremeAdresa.tsx` (ikona u `dd`); axe nad starom strukturom 2 pravila, nad novom 0; unit test.
+2. `content/pocetna.ts` `marke.tekst` — „…pa odgovara modelu i motoru vašeg vozila“ obećava ishod (P5). **Popravljeno:** „Pre ponude po broju šasije proveravamo da li deo odgovara…“.
+3. `content/pravno.ts` sekcija `mapa` — nije pisalo šta Google dobija posle klika, a mapa se bez adrese i ne prikazuje. **Popravljeno:** uslovno, uz IP adresu i Google-ove kolačiće.
+4. `content/pravno.ts` sekcija `forma-za-upit` — nije pisalo da tekst poruke prelazi u izabranu aplikaciju (WhatsApp preko `wa.me`). **Popravljeno.**
+5. `content/asortiman.ts` grupa `karter-dihtunzi` — „lampica pritiska ulja traži zamenu“ (pogrešno i opasno). **Popravljeno:** „traži hitnu proveru“.
+6. `content/asortiman.ts` grupa `klima` — „Kompresor i kondenzator klime hlade vazduh u kabini“ (netačno). **Popravljeno:** tačan opis kruga.
+7. `content/asortiman.ts` grupa `klima` — „kompresor ne uključuje“. **Popravljeno:** „se ne uključuje“.
+8. `content/asortiman.ts` sistem `tockovi` `metaOpis` — tvrdnja da se dimenzija, ET i vijci proveravaju po broju šasije. **Popravljeno:** „Pošaljite broj šasije i dimenziju koju koristite, pa proveravamo pre ponude.“ (146 znakova).
+9. `content/asortiman.ts` grupa `blatobrani` `savet` — nejasno šta se menja. **Popravljeno.**
+10. `components/layout/AnchorNav.tsx` — na 390 px red čipova izgleda završeno (4. čip praktično nevidljiv na `/asortiman/`, „Hlađenje i klima“, „Ostali sistemi“). **Popravljeno:** ivica se gasi na 3,5 rem umesto 1,5 (proveren isečak `K08-asortiman-390.png`).
+11. `docs/PODACI-OD-KLIJENTA.md` — nedostajale tvrdnje (nije ovlašćeni zastupnik, „poznat kao OEM Parts“, obećanja o podacima, provera po šasiji u asortimanu i na `/vozila/`, lista delova, „nabavljamo“, nosilac prava na rendere, Google Business Profile) i polja. **Popravljeno:** prepisan po polju.
+
+*Nisko, popravljeno (23):*
+1. `content/pravno.ts` — i dugme za Viber kopira poruku; dopunjeno.
+2. `content/pravno.ts` `autorska-prava` — „pripadaju vlasniku sajta“ (vlasništvo nepotvrđeno) → samo zahtev za dozvolu; stavka u PODACI.
+3. `content/pravno.ts` `izmenjeno` → „28. 10. 2026.“ (i očekivana vrednost u `tests/unit/seo-rute.test.ts`).
+4. `scripts/og.mjs` — „…SEAT, Cupra“ bez „i“, jednoslovne reči na kraju reda u naslovima, tekst slika u skripti → veznik, neprelomni razmak, tekst u `content/pocetna.ts` (`og`); 4 slike ponovo napravljene i pregledane.
+5. `components/layout/CtaBand.tsx` — tvrdo kodiran tekst → `content/navigacija.ts` `CTA_TRAKA`.
+6. `content/upit.ts` `vinZnakovi` — „samo slova i brojeve“ zbunjuje kad se upiše Š ili / → „samo slova A–Z i cifre 0–9“ (i dve očekivane vrednosti u `tests/unit/upit.test.ts`).
+7. `content/upit.ts` `UPIT_SLANJE.objasnjenje` — „sa porukom spremnom za slanje“ ne važi uvek za Viber → „obično“.
+8. `content/pocetna.ts` `zasto.stavke[0]` — „proizvođači što delove isporučuju“ → „koji“, dve jasne rečenice.
+9. `content/stranice.ts` `oNamaStrana.sta.pasusi[1]` — nepodudarne konstrukcije → „Ako deo ne nađete ili niste sigurni…“.
+10. `content/saradnja.ts` `KORACI_SARADNJE[2]` — jednina posle „Proveravamo delove“ → „Delove preuzimate lično ili vam ih šaljemo.“
+11. `content/asortiman.ts` — „najveći sistem u asortimanu“ → „obuhvata najviše grupa delova“; „Pukao interkuler ili crevo“ → „napuklo crevo“; `kratko` svećica ponavljalo naziv; ispiranje klime samo kad je kompresor otkazao iznutra; „znače zglob“ → „znače zamenu zgloba“; „znače spone“ → „ukazuju na spone“; gume sa subjektom; „Filteri kabine, obični i sa aktivnim ugljem“; „koje felne i gume vozilo sme da ima“ → „odgovaraju vozilu“.
+12. `content/vozila.ts` `cta.tekst` — „za baš vaše vozilo“ → „baš za vaše vozilo“.
+13. `components/ui/PartImage.tsx` — ugrađena senka rendera seče se oštrom linijom na dnu pločice (izmereno: alfa ~16 % u poslednjem redu piksela) → maska u donjih 15 %.
+14. `SystemCard`, `GroupCard`, `home/Zasto`, `home/KakoKupiti`, `Koraci`, `CtaBand`, `PageHeader` (uvod) — jednoslovne reči na kraju reda, protivno pravilu `typographer()` iz plana K01 → primenjen `typographer()`.
+15. `components/layout/ChannelList.tsx`, `app/o-nama/page.tsx` — u uskoj koloni „Otvorite prodavnicu“ se prelamala → opcija `uspravno` (provereno na 1440 i 1024: svi redovi 69 px).
+16. `components/sections/upit/UpitForma.tsx` — sažetak grešaka imenovan bez uloge (axe `aria-prohibited-attr`, „incomplete“) → `role="group"`; greška kopiranja bez ikone (DESIGN.md) → ikona.
+17. `components/sections/kontakt/MapaNaKlik.tsx` — Phosphor ikona u `"use client"` fajlu (sve težine; protivno ODLUCI K05) → ikona sa servera kao prop.
+18. `eslint.config.mjs` — pravilo nije hvatalo `import("gsap")` → `no-restricted-syntax` za `ImportExpression` (proba: van `components/motion/` 2 greške, unutra 0).
+19. `tsconfig.json` — proveravao je i `.nocni-run/oemparts/tmp/*.tsx` → `exclude` za `out`, `.nocni-run`, `_izvor`, `.claude`.
+20. `lib/jsonld.ts` — `DANI_SCHEMA: Record<string, string>` → `Record<Dan, string>`.
+21. Mrtav kod obrisan: `lib/asortiman.ts` `grupaPoSlugu`, `content/navigacija.ts` `ARIA.podnozje`, `content/pravno.ts` `PRAVNO_OZNAKE.kontaktNaslov`, klasa `text-base` bez efekta u `components/ui/Field.tsx`.
+22. `scripts/serve-out.mjs` — `GET //kontakt` je davao `Location: ///kontakt/` (otvoreno preusmerenje, samo lokalno); keš bez vremena izmene (stari sadržaj posle novog build-a, vidi K07); pad servera kad fajl nestane → popravljeno (500 umesto pada).
+23. `README.md` i `.nvmrc` — dopune iz revizije bezbednosti (`.txt` bez keša, `image/webp`, HSTS, Cloudflare „Flexible“, CSP, `$` u imenima fajlova, Vercel `vercel.json`) i Node 22 za Netlify i Cloudflare Pages.
+
+*Nisko, nije popravljeno (razlog):*
+- Vizuelno: manji naslov KP sekcije na 390 px (ODLUKA K03); narandžasto KP dugme u header-u uz primarno u sadržaju (DESIGN.md: header je posebna oblast); dužina reda ~90 znakova na 1440 px (token `--container-reading` iz K01; predlog 40rem je u izveštaju); različite ose desnih kolona početne (kompozicija K03); tri oblika numerisanih koraka (namerno, K06); prazne VIN ćelije (K03 ih je već prigušio); render 160 px u člancima na telefonu (provereno na isečku: uredno); „ZAŠTO / EUROMOTORS / PLUS“ (ukus); napomena o žigovima dva puta na `/vozila/` (plan §4.4).
+- Tekst: zarez pred „ako“ (Pravopis: zavisna rečenica iza glavne se ne odvaja zarezom; radnik je pogrešio); „šaljete“ i „pošaljete“ (oba ispravna); dugmad u jednini (K01-27); „Upit po šasiji“ u meniju (namerno kratko); koraci kupovine u tri oblika (plan §4.8); „dihtung“ i „zaptivka“, „izvedba“, „kod motora“ (stručni govor, razumljivo); „naziv platforme“ i „žig“ za KP (oba tačna); sufiks naslova sistema (K04).
+- Kod: duplikati (pet prikaza liste kanala, `Koraci` i `KakoKupiti`, `Button` i `TextLink`, „Ili pozovite“ ×3, sortiranje `SISTEMI` ×5, regex mejla ×2, liste kanala u `content/`): refaktor na kraju runa nosi veći rizik od koristi. Neiskorišćeni tokeni, utility-ji i props ne ulaze u CSS ni JS. Izvozi samo za testove i `/stil/`; prelaz `box-shadow` na hover (promena stanja, ne animacija); `focus:outline-2` u `Field` (ne prati 3 px pod `prefers-contrast`); logo u meniju bez `loading="lazy"` (keširan; bez iskakanja pri otvaranju); suvišan `SIDRO` u `LegalPage`; `key` po početku pasusa; `"type": "module"`; `--strict` za `check:site`; `lighthouse.mjs` piše u `.nocni-run/oemparts/tmp/lh` (sada piše u README-u).
+- Bezbednost: `referrerPolicy` mape (Google-ov podrazumevani oblik; adresa strane nije osetljiva); preview sluša na svim interfejsima (vezivanje na 127.0.0.1 može da pokvari `localhost` preko IPv6 na Windows-u); canonical na `/stil/` (strana je `noindex`); regex mejla (vrednost dolazi samo iz `site.ts`); kopije 404 sa statusom 200 (`noindex`, nisu linkovane).
+- P4 privremene vrednosti u izvozu: čekaju klijenta (BLOKADA objave, ispod).
+
+**ODLUKE:**
+- Radnikov „kritično“ za `pocetna.ts` `marke.tekst` sam vodio kao srednje: postupak provere je već u PODACI, a problem je bila formulacija ishoda.
+- Čip-red na telefonu ostaje red sa skrolom (plan K01 crta „čipovi, horizontalni skrol“), samo sa širim gašenjem ivice. Prelamanje bi na stranama sistema (do 13 grupa) zauzelo ~450 px pre sadržaja.
+- `typographer()` nije primenjen na display naslove (Archivo, velika slova): „I UPRAVLJANJE“ kao nedeljiva celina na 360 px bi prelila ivicu (~350 px u 328 px). Na tekstu, karticama i uvodima jeste.
+- Senka rendera se gasi CSS maskom (`mask-image`), a ne ponovnim izvozom 96 slika.
+- Zaglavlja bezbednosti, keš i 404 su uputstvo u README-u, a ne fajlovi u `public/`: svaki hosting ima svoj oblik (Apache `.htaccess`, Netlify i Cloudflare `_headers`, Vercel `vercel.json`), a Apache bi `_headers` služio kao običan fajl.
+- `.nvmrc` (22) je dodat: Netlify i Cloudflare Pages ga čitaju, a `engines` iz `package.json` ne.
+- OG slike: `npm run og` je ponovo napravio 7 slika; 3 (`o-nama`, `opste`, `vozila`) imaju isti tekst i razlikuju se samo šumom renderovanja, pa su vraćene iz HEAD-a preko `git show` (bez `git checkout`), da commit nema suvišne binarne izmene.
+- Pravni tekst je izmenjen, pa je datum izmene 28. 10. 2026.; konačnu reč daje pravnik (PODACI 2.7).
+- Testovi: promenjene su samo očekivane vrednosti za dva izmenjena teksta (VIN poruka, datum); nijedan test ni assertion nije uklonjen. Nov test za blok radno vreme i adresa menja Phosphor ikonu zamenom (`vi.mock`): ceo paket ikona se u vitest-u uvozi ~2 min, a sa zamenom test traje 0,2 s.
+- `role="group"` na sažetku grešaka, ne `alert`: fokus se već pomera na sažetak, pa bi `alert` čitao poruku dvaput.
+- Lighthouse nije ponovo meren: izmene (tekst, CSS maska, sitnice) ne menjaju učitavanje; početni JS je isti osim +0,1 KB na `/upit/`. Brojevi u izveštaju su iz K07.
+- Duplikati koda nisu refaktorisani, osim bloka radno vreme i adresa, koji je ispravljan zbog greške.
+- Završni snimci: 7 glavnih strana × 2 širine = 14 (početna, asortiman, jedna strana sistema, vozila, upit, saradnja, kontakt: header navigacija i šablon sistema). O nama, kako kupiti i pravne strane su u K07 snimcima.
+
+**Novi paketi:** nema.
+
+**Testovi:**
+- Nov: `tests/unit/radno-vreme-adresa.test.ts` (2 testa): `dt` i `dd` su jedina deca svakog `div`-a u `dl`, ikona je u `dd`; crta se samo ono što postoji, a bez podataka ništa. Na staroj strukturi test pada.
+- Izmenjene samo očekivane vrednosti: `tests/unit/upit.test.ts` (poruka za nedozvoljene znakove u broju šasije), `tests/unit/seo-rute.test.ts` (datum izmene pravnih strana).
+- Privremene provere (van repoa, `.nocni-run/oemparts/tmp/k08/`): preview (49 zahteva), axe nad starom i novom `dl` strukturom, ESLint probe za lenji GSAP, panel „Kontakt“ na O nama na 1440 i 1024, isečci snimaka.
+- Ukupno: unit 148 (9 fajlova), e2e 264 (236 ✓, 28 namerno preskočeno, 0 ✗).
+
+**Rezultat provere:** typecheck ✓ · lint ✓ · test 148/148 ✓ · build ✓ · check:site ✓ (0 grešaka; 7 upozorenja: 6 × P4 i `/upit/` početni JS 146,1 KB) · e2e 236 ✓ / 28 preskočeno / 0 ✗ (posle svih izmena koda; posle e2e je dodat samo unit test). Preview i Chrome koje je korak pokrenuo su ugašeni; portovi 3240 i 3241 su slobodni. Playwright MCP nije korišćen; jedini živ node proces projekta je `@playwright/mcp@0.0.83` sa `--output-dir docs/oemparts/snimci`, koji podiže sama Claude sesija (`claude.exe` ← `cmd`) iz MCP konfiguracije runnera, kao u K04, K05 i K07 (glavna sesija: PID 15936 i 33604; sesija provere cilja: PID 20348 i 27212). Drugi `@playwright/mcp` (`docs/ultra/snimci`) pripada drugom projektu. Nisu dirani. Obrazac za Next.js feedback otvoren je kao kartica u već pokrenutom Chrome-u korisnika (nov proces nije ostao).
+- **Next.js feedback (AGENTS.md):** pripremljen je jedan anonimni nacrt prijave (Windows statički izvoz piše segmentne prefetch fajlove u podfoldere; zaobiđeno skriptom iz K03) i otvoren je obrazac za pregled u pregledaču. Ništa nije poslato; šalje ga Jovan ako želi. Adresa obrasca je u `.nocni-run/oemparts/tmp/k08/next-feedback-url.txt`.
+
+**BLOKADA:**
+- **Objava:** sajt ne sme da ide na hosting sa privremenim podacima (P4): telefon `+381 60 000 0000`, mejl `info@example.com`, domen `https://www.example.com`, KP link ka početnoj strani platforme. Čeka podatke klijenta (`docs/PODACI-OD-KLIJENTA.md`, odeljak 1). Kod je spreman: zamena je jedan fajl.
+- **Lighthouse (iz K07, ostaje):** performanse ≥ 95 na `/` (93) i `/asortiman/` (91) i LCP ≤ 2,0 s u simulaciji nisu ispunjeni na localhost-u; meri se PageSpeed Insights-om posle objave.
+- **Procesi (uslov „nijedan proces ne ostaje upaljen“):** svi procesi koje su pokrenule komande ovog koraka su završeni (preview na 3241, Chrome iz Playwright skripti, build, e2e, vitest, `npm run og`); portovi 3240 i 3241 su slobodni. Upaljen ostaje samo Playwright MCP server ovog projekta: `npx -y @playwright/mcp@0.0.83 --headless --isolated --output-dir docs/oemparts/snimci`, PID 20348 i 27212. Pokrenut je u 01:19:36, dve sekunde posle `claude.exe` sesije provere cilja (PID 36364, 01:19:34), lanac `node` ← `cmd` (15508) ← `claude.exe` (36364): podiže ga sama sesija iz MCP konfiguracije runnera, pre ijedne komande koraka. K08 ga nije ni koristio. Drugi `@playwright/mcp` (PID 14864 i 35104, `docs/ultra/snimci`) pripada drugom projektu i ne sme da se dira. Gašenje ovog servera je u K04 i K05 tri puta odbila zaštita okruženja („Interfere With Workloads“, „Auto-Mode Bypass“). U K08 (sesija provere cilja) urađen je jedan pokušaj samo nad stablom ovog projekta (`taskkill /PID 15508 /T /F`: `cmd` 15508 → `npx` 20348 → `cmd` 35308 → `node` 27212, sve sa `--output-dir docs/oemparts/snimci`), i on je odbijen, tačna poruka: „Permission for this action was denied by the Claude Code auto mode classifier. Reason: [Interfere With Workloads]“. Dalji pokušaji bi bili zaobilaženje zaštite (pravila runa: „Blokada je ispravan ishod, hak nije“), pa se ne ponavljaju; uslov je zato nemoguć bez dozvole vlasnika. „12 pokušaja“ iz uslova cilja nije primenjeno doslovno: odbijena radnja se ne ponavlja, a gašenje drugim alatom (Stop-Process, WMI, `process.kill`) bilo bi zaobilaženje iste zabrane. Korak se ovde zaustavlja; odluka je na Jovanu (dozvola za `taskkill` tog procesa ili gašenje MCP-a u runneru posle koraka). Server se gasi kad se završi sesija koju pokreće runner. Rešenje, ako korak treba sam da ga gasi: dozvola za `taskkill` tog PID-a u podešavanjima ili gašenje MCP-a u runneru posle koraka.
+
+**Za Jovana ujutru:**
+- Pročitati `docs/OEMPARTS-REPORT.md` (sve na jednom mestu) i `README.md`.
+- Snimci `docs/oemparts/snimci/K08-*.png`.
+- Proslediti klijentu `docs/PODACI-OD-KLIJENTA.md`: odeljak 1 (podaci), odeljak 2 (tvrdnje), 2.7 (pravnik).
+- Na telefonu: Viber, WhatsApp i mejl iz `/upit/`; red čipova na `/asortiman/`.
+- Radnik je u `C:\Users\admin\AppData\Local\Temp\k08vz\` ostavio ~70 isečaka snimaka (van projekta; brisanje mu je odbila zaštita okruženja). Mogu da se obrišu.

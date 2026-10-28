@@ -1,6 +1,7 @@
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import type { Korak } from "@/content/kupovina";
 import { cn } from "@/lib/cn";
+import { typographer } from "@/lib/format";
 
 /**
  * Numerisani koraci (redosled nosi informaciju). Na telefonu uspravno sa linijom levo; od 768 px
@@ -36,8 +37,8 @@ export function Koraci({ koraci, className }: { koraci: readonly Korak[]; classN
               <span aria-hidden="true" className="absolute top-14 bottom-2 left-6 w-px bg-line-strong md:hidden" />
             ) : null}
             <div className="md:mt-6 md:pr-6">
-              <h3 className="pt-2.5 type-h3 text-ink-1 md:pt-0">{k.naslov}</h3>
-              <p className="mt-2 max-w-[40ch] text-ink-2">{k.tekst}</p>
+              <h3 className="pt-2.5 type-h3 text-ink-1 md:pt-0">{typographer(k.naslov)}</h3>
+              <p className="mt-2 max-w-[40ch] text-ink-2">{typographer(k.tekst)}</p>
             </div>
           </RevealItem>
         );

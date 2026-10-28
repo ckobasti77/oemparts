@@ -55,7 +55,8 @@ async function postoji(p) {
 async function nadji(urlPath) {
   let p;
   try {
-    p = decodeURIComponent(urlPath);
+    // Više kosih crta na početku (`//kontakt`) bi u Location dale adresu na drugom hostu (K08).
+    p = decodeURIComponent(urlPath).replace(/^\/+/, "/");
   } catch {
     return { status: 400 };
   }
@@ -71,7 +72,8 @@ async function nadji(urlPath) {
 }
 
 async function sadrzaj(fajl, kodiranje) {
-  const kljuc = `${fajl}|${kodiranje}`;
+  // Vreme izmene je u ključu: posle novog `npm run build` server ne služi stari sadržaj (K08).
+  const kljuc = `${fajl}|${kodiranje}|${(await stat(fajl)).mtimeMs}`;
   if (kes.has(kljuc)) return kes.get(kljuc);
   const sirovo = await readFile(fajl);
   let telo = sirovo;
@@ -81,7 +83,7 @@ async function sadrzaj(fajl, kodiranje) {
   return telo;
 }
 
-const server = createServer(async (req, res) => {
+const obradi = async (req, res) => {
   const pocetak = Date.now();
   const urlPath = new URL(req.url ?? "/", "http://localhost").pathname;
   const log = (status) => console.log(`${status} ${req.method} ${urlPath} ${Date.now() - pocetak}ms`);
@@ -127,6 +129,15 @@ const server = createServer(async (req, res) => {
   if (req.method === "HEAD") res.end();
   else res.end(telo);
   log(status);
+};
+
+const server = createServer((req, res) => {
+  obradi(req, res).catch((e) => {
+    // Fajl je nestao ili se ne može pročitati (npr. dok traje `npm run build`): 500, a server radi dalje.
+    console.error(e);
+    if (!res.headersSent) res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("500");
+  });
 });
 
 server.on("error", (e) => {

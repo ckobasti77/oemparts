@@ -48,7 +48,7 @@ export const oNamaStrana = {
     /** `{kanali}` popunjava lib/links.ts samo kanalima koji imaju vrednost (P4). */
     pasusi: [
       "Euromotors Plus je registrovan kao veleprodaja. Nabavljamo i prodajemo delove za vozila VW grupe, od motora i kočnica do elektrike i karoserije. Radimo sa servisima, automehaničarima i firmama.",
-      "Ponudu možete da pogledate u našoj prodavnici na KupujemProdajem. Za deo koji ne nađete ili ako niste sigurni šta vam treba, pošaljite broj šasije. Možete nam se javiti i direktno: {kanali}.",
+      "Ponudu možete da pogledate u našoj prodavnici na KupujemProdajem. Ako deo ne nađete ili niste sigurni šta vam treba, pošaljite broj šasije. Možete nam se javiti i direktno: {kanali}.",
     ],
     kanali: ["telefon", "viber", "whatsapp", "email"] as const,
   },

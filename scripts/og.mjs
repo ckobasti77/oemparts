@@ -15,7 +15,6 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const IZLAZ = path.join(root, "public", "og");
-const PODNASLOV = "Originalni i OEM delovi za vozila VW grupe";
 const AUTO = { rasklopljen: "images/hero/car-exploded-1920.webp", sklopljen: "images/hero/car-assembled-1920.webp" };
 
 /**
@@ -24,8 +23,10 @@ const AUTO = { rasklopljen: "images/hero/car-exploded-1920.webp", sklopljen: "im
  */
 export function ogStrane({ SISTEMI, pocetna, asortimanStrana, vozilaStrana, upitStrana, saradnjaStrana, oNamaStrana, kupovinaStrana, kontaktStrana, site }) {
   const deo = (slug) => `images/delovi/${slug}.webp`;
+  const PODNASLOV = pocetna.og.opsti;
+  const marke = `${site.marke.slice(0, -1).join(", ")} i ${site.marke.at(-1)}`;
   return [
-    { ime: "pocetna", naslov: pocetna.hero.naslov, podnaslov: `Veleprodaja delova za ${site.marke.join(", ")}`, slika: AUTO.rasklopljen, vrsta: "auto" },
+    { ime: "pocetna", naslov: pocetna.hero.naslov, podnaslov: pocetna.og.podnaslov.replace("{marke}", marke), slika: AUTO.rasklopljen, vrsta: "auto" },
     { ime: "asortiman", naslov: asortimanStrana.naslov, podnaslov: PODNASLOV, slika: deo("motor"), vrsta: "deo" },
     ...SISTEMI.map((s) => ({ ime: `asortiman-${s.slug}`, naslov: s.naziv, podnaslov: PODNASLOV, slika: deo(s.slika), vrsta: "deo" })),
     { ime: "vozila", naslov: vozilaStrana.naslov, podnaslov: PODNASLOV, slika: AUTO.sklopljen, vrsta: "auto" },
@@ -39,6 +40,9 @@ export function ogStrane({ SISTEMI, pocetna, asortimanStrana, vozilaStrana, upit
 }
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+/** Jednoslovna reč (i, u, s, k, o, a) ostaje uz sledeću, kao `typographer` u lib/format.ts (K08). */
+const NBSP = String.fromCharCode(160);
+const vezi = (s) => s.replace(/(?<![\p{L}\p{N}_])([iuskoaIUSKOA])[ \t]+(?=\S)/gu, `$1${NBSP}`);
 const url = (p) => pathToFileURL(p).href;
 
 const PS_LATIN = "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD";
@@ -71,7 +75,7 @@ h1{font:700 52px/1.05 "Archivo",Arial,sans-serif;text-transform:uppercase;color:
 p{margin-top:24px;font:400 24px/1.35 "PS",Arial,sans-serif;color:#c4beb4}
 </style></head><body><div class="okvir"><div class="sjaj"></div>${render}
 <img class="logo" src="${logo}" alt="">
-<div class="tekst"><div class="linija"></div><h1 id="n">${esc(s.naslov)}</h1><p>${esc(s.podnaslov)}</p></div></div></body></html>`;
+<div class="tekst"><div class="linija"></div><h1 id="n">${esc(vezi(s.naslov))}</h1><p>${esc(vezi(s.podnaslov))}</p></div></div></body></html>`;
 }
 
 async function ucitajSadrzaj() {

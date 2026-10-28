@@ -2,7 +2,7 @@
  * JSON-LD graditelji (plan K01 §8.3). Samo popunjena polja; vrednosti samo iz content/site.ts.
  * Prikazuje ih components/layout/JsonLd.tsx.
  */
-import { site } from "@/content/site";
+import { site, type Dan } from "@/content/site";
 import type { Pitanje } from "@/content/kupovina";
 import { kpHref, kpJeGenericki } from "@/lib/links";
 import { normalizePhone } from "@/lib/format";
@@ -52,7 +52,7 @@ export function websiteLd(): JsonLd {
   });
 }
 
-const DANI_SCHEMA: Record<string, string> = {
+const DANI_SCHEMA: Record<Dan, string> = {
   pon: "Monday",
   uto: "Tuesday",
   sre: "Wednesday",

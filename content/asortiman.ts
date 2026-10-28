@@ -55,7 +55,7 @@ export const SISTEMI: readonly Sistem[] = [
     redosled: 1,
     opis: "Blok i glava motora, turbina, usis, gorivo, paljenje, kaiševi i pomoćni agregati.",
     uvod: [
-      "Motor i usis je najveći sistem u asortimanu. Obuhvata blok i glavu motora, turbinu i interkuler, usisnu granu, brizgaljke i pumpu goriva, paljenje i grejače, kaiševe, alternator i anlaser, karter, EGR ventil i nosače motora.",
+      "Motor i usis obuhvata najviše grupa delova u asortimanu: blok i glavu motora, turbinu i interkuler, usisnu granu, brizgaljke i pumpu goriva, paljenje i grejače, kaiševe, alternator i anlaser, karter, EGR ventil i nosače motora.",
       "Isti model vozila VW grupe dolazi sa više motora, benzinskih i dizelskih. Delovi se razlikuju po kodu motora, a ne samo po modelu i godištu. Kod motora piše na bloku i u servisnoj knjižici, a po broju šasije proveravamo da li deo odgovara.",
       "Za veće poslove, kao što je zamena zupčastog kaiša ili turbine, navedite u upitu sve delove koje menjate u istom poslu.",
     ],
@@ -218,7 +218,7 @@ export const SISTEMI: readonly Sistem[] = [
     uvod: [
       "Gume su jedini dodir vozila sa putem, pa od točkova zavise kočenje i upravljanje. U ovom sistemu su felne, gume i vijci točkova za vozila Volkswagen, Audi, Škoda, SEAT i Cupra.",
       "Felna mora da odgovara vozilu po broju i rasporedu rupa, prečniku centralnog otvora i ofsetu (ET). Vijci točkova se razlikuju po dužini, navoju i obliku naleganja, pa vijci sa jedne felne ne moraju da odgovaraju drugoj. Čelične i aluminijumske felne često traže različite vijke. Ako vozilo ima senzore pritiska u ventilima, navedite to u upitu.",
-      "Gume birajte po dimenziji, indeksu nosivosti i indeksu brzine. Podaci su na boku postojeće gume. Gume na istoj osovini treba da budu iste dimenzije i vrste. Ako niste sigurni koje felne i gume vozilo sme da ima, pošaljite broj šasije i dimenziju koju sada koristite.",
+      "Gume birajte po dimenziji, indeksu nosivosti i indeksu brzine. Podaci su na boku postojeće gume. Gume na istoj osovini treba da budu iste dimenzije i vrste. Ako niste sigurni koje felne i gume odgovaraju vozilu, pošaljite broj šasije i dimenziju koju sada koristite.",
     ],
     upitSaveti: [
       "Broj šasije (VIN) iz saobraćajne dozvole, polje E.",
@@ -228,7 +228,7 @@ export const SISTEMI: readonly Sistem[] = [
       "Da li vozilo ima senzore pritiska u ventilima točkova.",
     ],
     metaOpis:
-      "Felne, gume i vijci točkova za Volkswagen, Audi, Škoda, SEAT i Cupra. Pošaljite broj šasije: dimenziju, ET i vijke proveravamo pre ponude.",
+      "Felne, gume i vijci točkova za Volkswagen, Audi, Škoda, SEAT i Cupra. Pošaljite broj šasije i dimenziju koju koristite, pa proveravamo pre ponude.",
     slika: "felne-gume",
   },
   {
@@ -278,7 +278,7 @@ export const GRUPE: readonly Grupa[] = [
     sistem: "motor-i-usis",
     kratko: "Interkuleri, creva i obujmice.",
     staRadi: "Interkuler hladi vazduh posle turbine, pa motor dobija gušći vazduh i više snage.",
-    kadaSeMenja: "Pukao interkuler ili crevo daje gubitak snage, dim i grešku niskog pritiska punjenja.",
+    kadaSeMenja: "Pukao interkuler ili napuklo crevo daju gubitak snage, dim i grešku niskog pritiska punjenja.",
     savet: "Ako je turbina bacala ulje, interkuler i creva operite ili zamenite pre nove turbine.",
   },
   {
@@ -339,7 +339,7 @@ export const GRUPE: readonly Grupa[] = [
     slug: "paljenje-grejaci",
     naziv: "Svećice, bobine i grejači",
     sistem: "motor-i-usis",
-    kratko: "Svećice, bobine i grejači.",
+    kratko: "Svećice za benzince, bobine paljenja i grejači za dizel.",
     staRadi: "Svećice i bobine pale smešu kod benzinaca, a grejači pomažu hladan start dizela.",
     kadaSeMenja: "Preskakanje, trzanje pri ubrzanju ili težak start na hladno znače proveru paljenja ili grejača.",
     savet: "Bobine na TSI motorima menjajte po grešci konkretnog cilindra, a svećice uvek u kompletu.",
@@ -350,7 +350,7 @@ export const GRUPE: readonly Grupa[] = [
     sistem: "motor-i-usis",
     kratko: "Karteri, pumpe ulja, dihtunzi i semerinzi.",
     staRadi: "Karter drži ulje, pumpa ulja ga razvodi, a dihtunzi i semerinzi zaptivaju motor.",
-    kadaSeMenja: "Curenje ulja, udaren karter ili lampica pritiska ulja traže zamenu.",
+    kadaSeMenja: "Curenje ulja ili udaren karter traže zamenu, a lampica pritiska ulja traži hitnu proveru.",
     savet: "Čep kartera ili njegovu podlošku menjajte pri svakoj zameni ulja — mala stavka koja sprečava curenje.",
   },
   {
@@ -412,9 +412,9 @@ export const GRUPE: readonly Grupa[] = [
     naziv: "Kompresor i kondenzator klime",
     sistem: "hladjenje-i-klima",
     kratko: "Kompresori, kondenzatori i sušači.",
-    staRadi: "Kompresor i kondenzator klime hlade vazduh u kabini.",
-    kadaSeMenja: "Klima ne hladi, kompresor ne uključuje ili se čuje zujanje — proverite punjenje i kompresor.",
-    savet: "Pri zameni kompresora obavezno menjajte sušač i ispirajte sistem.",
+    staRadi: "Kompresor pokreće rashladno sredstvo kroz klimu, a kondenzator odvodi toplotu iz njega. Tako klima hladi vazduh u kabini.",
+    kadaSeMenja: "Klima ne hladi, kompresor se ne uključuje ili se čuje zujanje — proverite punjenje i kompresor.",
+    savet: "Pri zameni kompresora obavezno menjajte sušač, a sistem isperite ako je kompresor otkazao iznutra.",
   },
   {
     slug: "kvacilo-zamajac",
@@ -440,7 +440,7 @@ export const GRUPE: readonly Grupa[] = [
     sistem: "transmisija",
     kratko: "Poluosovine, zglobovi i manžetne.",
     staRadi: "Poluosovine i homokinetički zglobovi prenose snagu od menjača do točkova.",
-    kadaSeMenja: "Kliktanje pri skretanju ili pocepana manžetna znače zglob ili celu poluosovinu.",
+    kadaSeMenja: "Kliktanje pri skretanju ili pocepana manžetna znače zamenu zgloba ili cele poluosovine.",
     savet: "Pocepanu manžetnu zamenite odmah — zglob bez masti i sa prljavštinom brzo propada.",
   },
   {
@@ -467,7 +467,7 @@ export const GRUPE: readonly Grupa[] = [
     sistem: "vesanje-i-upravljanje",
     kratko: "Spone, krajevi spona i štangle stabilizatora.",
     staRadi: "Spone povezuju letvu volana sa točkovima, a štangle stabilizatora smanjuju naginjanje.",
-    kadaSeMenja: "Zazor u volanu ili tupo lupkanje preko ležećih policajaca znače spone ili štangle.",
+    kadaSeMenja: "Zazor u volanu ili tupo lupkanje preko ležećih policajaca ukazuju na spone ili štangle.",
     savet: "Štangle stabilizatora pritežite dok je vozilo na točkovima, inače gumice brzo pucaju.",
   },
   {
@@ -585,7 +585,7 @@ export const GRUPE: readonly Grupa[] = [
     kratko: "Blatobrani i podbranici.",
     staRadi: "Blatobrani štite točkove i oblikuju prednji deo vozila.",
     kadaSeMenja: "Udar ili korozija na ivici luka znače zamenu.",
-    savet: "Plastične podbranike menjajte zajedno sa limom ako su oštećeni.",
+    savet: "Pri zameni blatobrana proverite i plastične podbranike i zamenite ih ako su oštećeni.",
   },
   {
     slug: "vrata",
@@ -629,7 +629,7 @@ export const GRUPE: readonly Grupa[] = [
     sistem: "tockovi",
     kratko: "Felne, gume i vijci točkova.",
     staRadi: "Gume su jedini dodir vozila sa putem, a felna nosi gumu i vezuje točak za glavčinu.",
-    kadaSeMenja: "Menjaju se kada dubina šare padne ispod zakonskog minimuma, kada guma ostari ili joj je bok oštećen.",
+    kadaSeMenja: "Gume se menjaju kada dubina šare padne ispod zakonskog minimuma, kada ostare ili im je bok oštećen.",
     savet: "Dimenziju i indekse proverite na boku postojeće gume, a ET na felni.",
   },
   {
@@ -644,7 +644,7 @@ export const GRUPE: readonly Grupa[] = [
       { slug: "filter-ulja", naziv: "Filter ulja", kratko: "Filteri ulja i ulošci." },
       { slug: "filter-vazduha", naziv: "Filter vazduha", kratko: "Filteri vazduha motora." },
       { slug: "filter-goriva", naziv: "Filter goriva", kratko: "Filteri goriva za dizel i benzin." },
-      { slug: "filter-kabine", naziv: "Filter kabine", kratko: "Filteri kabine i sa aktivnim ugljem." },
+      { slug: "filter-kabine", naziv: "Filter kabine", kratko: "Filteri kabine, obični i sa aktivnim ugljem." },
     ],
   },
   {

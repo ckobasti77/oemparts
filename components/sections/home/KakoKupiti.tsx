@@ -2,6 +2,7 @@ import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { TextLink } from "@/components/ui/TextLink";
 import { KORACI_KUPOVINE } from "@/content/kupovina";
 import { pocetna } from "@/content/pocetna";
+import { typographer } from "@/lib/format";
 import { RUTE } from "@/lib/routes";
 
 /**
@@ -46,8 +47,8 @@ export function KakoKupiti() {
                 <span aria-hidden="true" className="absolute top-14 bottom-2 left-6 w-px bg-line-strong md:hidden" />
               ) : null}
               <div className="md:mt-6 md:pr-6">
-                <h3 className="pt-2.5 type-h3 text-ink-1 md:pt-0">{k.naslov}</h3>
-                <p className="mt-2 max-w-[40ch] text-ink-2">{k.tekst}</p>
+                <h3 className="pt-2.5 type-h3 text-ink-1 md:pt-0">{typographer(k.naslov)}</h3>
+                <p className="mt-2 max-w-[40ch] text-ink-2">{typographer(k.tekst)}</p>
               </div>
             </RevealItem>
           );

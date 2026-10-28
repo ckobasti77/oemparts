@@ -22,7 +22,7 @@ export const saradnjaStrana = {
 export const KORACI_SARADNJE: readonly Korak[] = [
   { naslov: "Upit", tekst: "Šaljete broj šasije ili listu delova koji vam trebaju." },
   { naslov: "Ponuda", tekst: "Proveravamo delove i javljamo vam ponudu." },
-  { naslov: "Preuzimanje ili slanje", tekst: "Deo preuzimate lično ili vam ga šaljemo." },
+  { naslov: "Preuzimanje ili slanje", tekst: "Delove preuzimate lično ili vam ih šaljemo." },
   { naslov: "Račun", tekst: "Za firme izdajemo račun na podatke firme." },
 ];
 

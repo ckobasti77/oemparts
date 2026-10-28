@@ -27,7 +27,7 @@ export const POLITIKA_PRIVATNOSTI: PravnaStrana = {
     opis: "Kako sajt Euromotors Plus postupa sa podacima: bez naloga, kolačića i analitike. Forma za upit ništa ne šalje na server i ništa ne čuva.",
   },
   naslov: "Politika privatnosti",
-  izmenjeno: "27. 10. 2026.",
+  izmenjeno: "28. 10. 2026.",
   uvod: "Ovaj sajt nema naloge, ne prodaje online i ne koristi kolačiće ni analitiku. Forma za upit ništa ne šalje na server.",
   sekcije: [
     {
@@ -51,8 +51,8 @@ export const POLITIKA_PRIVATNOSTI: PravnaStrana = {
       naslov: "Forma za upit",
       pasusi: [
         "Forma za upit po broju šasije sastavlja poruku u vašem pregledaču. Sajt tu poruku ne šalje na server i ne čuva je, a podaci koje upišete ostaju na vašem uređaju dok ih ne pošaljete.",
-        "Kada izaberete Viber, WhatsApp ili mejl, poruku šaljete vi, iz te aplikacije. Tek tada ona stiže do nas. Za te servise važe njihova pravila o privatnosti.",
-        "Dugme „Kopiraj poruku“ upisuje poruku u privremenu memoriju vašeg uređaja, da biste je nalepili u aplikaciju.",
+        "Kada izaberete Viber, WhatsApp ili mejl, tekst poruke sa podacima koje ste upisali predaje se toj aplikaciji, a poruku šaljete vi. Tek tada ona stiže do nas. Link za WhatsApp ide preko adrese wa.me, pa tekst poruke može da prođe kroz WhatsApp-ove servere već pri otvaranju. Za te servise važe njihova pravila o privatnosti.",
+        "Dugme „Kopiraj poruku“ upisuje poruku u privremenu memoriju vašeg uređaja, da biste je nalepili u aplikaciju. Isto radi i dugme za Viber.",
       ],
     },
     {
@@ -67,8 +67,8 @@ export const POLITIKA_PRIVATNOSTI: PravnaStrana = {
       id: "mapa",
       naslov: "Mapa",
       pasusi: [
-        "Mapa na strani Kontakt učitava Google mape tek kada kliknete na dugme za prikaz mape. Dok ne kliknete, vaš pregledač ne šalje ništa Google-u.",
-        "Posle klika mapu učitava Google, pa za nju važi Google-ova politika privatnosti.",
+        "Kada je na strani Kontakt navedena adresa, mapa sa Google mapa se učitava tek kada kliknete na dugme za prikaz mape. Dok ne kliknete, vaš pregledač ne šalje ništa Google-u.",
+        "Posle klika vaš pregledač se povezuje sa Google-om. Google tada dobija vašu IP adresu i tehničke podatke pregledača i može da postavi svoje kolačiće. Za to važi Google-ova politika privatnosti.",
       ],
     },
     {
@@ -107,7 +107,7 @@ export const USLOVI_KORISCENJA: PravnaStrana = {
     opis: "Uslovi korišćenja sajta Euromotors Plus · OEM Parts: informativni sadržaj, kupovina preko KupujemProdajem ili direktnog dogovora, nazivi marki.",
   },
   naslov: "Uslovi korišćenja",
-  izmenjeno: "27. 10. 2026.",
+  izmenjeno: "28. 10. 2026.",
   uvod: "Sadržaj sajta je informativan. Sajt ne prodaje online, nema naloge i ne prima plaćanja.",
   sekcije: [
     {
@@ -159,7 +159,7 @@ export const USLOVI_KORISCENJA: PravnaStrana = {
       id: "autorska-prava",
       naslov: "Tekstovi, logo i slike",
       pasusi: [
-        "Tekstovi, logo i slike na sajtu pripadaju vlasniku sajta. Ne smeju se preuzimati i objavljivati bez njegove dozvole.",
+        "Tekstovi, logo i slike sa ovog sajta ne smeju se preuzimati i objavljivati bez dozvole vlasnika sajta.",
       ],
     },
     {
@@ -194,5 +194,4 @@ export const USLOVI_KORISCENJA: PravnaStrana = {
 export const PRAVNO_OZNAKE = {
   izmenjeno: "Poslednja izmena:",
   sadrzaj: "Sadržaj strane",
-  kontaktNaslov: "Kontakt",
 };

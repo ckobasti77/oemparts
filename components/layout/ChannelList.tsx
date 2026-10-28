@@ -10,8 +10,10 @@ import { kanali } from "@/lib/links";
  * Kanali kao redovi jednog panela (plan K01 §4.9): ceo red je link, visine 64 px — ikona, naziv,
  * vrednost i strelica (↗ za novi prozor). Samo kanali sa vrednošću (P4). Panel r 14 sa 4 px
  * unutrašnjeg razmaka, pa su redovi r 10 (koncentrično); fokus prsten prati red.
+ * `uspravno`: naziv iznad vrednosti i na širem ekranu, za usku bočnu kolonu (K08: na „O nama“
+ * se „Otvorite prodavnicu“ inače prelamala u dva reda).
  */
-export function ChannelList({ className }: { className?: string }) {
+export function ChannelList({ className, uspravno = false }: { className?: string; uspravno?: boolean }) {
   const lista = kanali();
   if (lista.length === 0) return null;
   return (
@@ -33,7 +35,12 @@ export function ChannelList({ className }: { className?: string }) {
               >
                 <Ikona size={20} />
               </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+              <span
+                className={cn(
+                  "flex min-w-0 flex-1 flex-col gap-0.5",
+                  !uspravno && "sm:flex-row sm:items-baseline sm:justify-between sm:gap-4",
+                )}
+              >
                 <span className="font-semibold text-ink-1">{k.oznaka}</span>
                 {vrednost ? <span className="text-ink-2 tabular-nums [overflow-wrap:anywhere]">{vrednost}</span> : null}
               </span>

@@ -8,6 +8,9 @@ import { cn } from "@/lib/cn";
  * `prioritet` (K07) je za render koji je LCP (prvi red na /asortiman/): `eager` i
  * `fetchpriority="high"`, u `<picture>` omotaču. React ne pravi preload nagoveštaj za sliku u
  * `<picture>`, pa prefetch strane sa drugih strana ne preuzima render (razlog ODLUKE K04).
+ *
+ * Renderi imaju ugrađenu senku do donje ivice slike; maska je gasi u donjih 15 %, da se na pločici
+ * ne vidi oštra linija (K08).
  */
 export function PartImage({
   slug,
@@ -37,7 +40,7 @@ export function PartImage({
       loading={eager || prioritet ? "eager" : "lazy"}
       decoding="async"
       {...(prioritet ? { fetchPriority: "high" as const } : {})}
-      className={cn("h-auto w-full", className)}
+      className={cn("h-auto w-full [mask-image:linear-gradient(to_bottom,black_85%,transparent)]", className)}
     />
   );
   return prioritet ? <picture className="block">{slika}</picture> : slika;

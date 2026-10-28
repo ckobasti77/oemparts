@@ -123,7 +123,7 @@ describe("K06 strane", () => {
       const ids = p.sekcije.map((s) => s.id);
       expect(new Set(ids).size).toBe(ids.length);
       for (const id of ids) expect(id).toMatch(/^[a-z0-9-]+$/);
-      expect(p.izmenjeno).toBe("27. 10. 2026.");
+      expect(p.izmenjeno).toBe("28. 10. 2026.");
     }
     const tekst = POLITIKA_PRIVATNOSTI.sekcije.flatMap((s) => s.pasusi).join(" ");
     expect(tekst).toMatch(/kolačiće/);

@@ -73,7 +73,7 @@ export default function ONamaPage() {
           <h2 id="panel-naslov" className="mb-4 type-h3 text-ink-1">
             {t.panelNaslov}
           </h2>
-          <ChannelList />
+          <ChannelList uspravno />
         </aside>
       </div>
 

@@ -67,7 +67,7 @@ export function Field({
 }
 
 const poljeOsnova =
-  "w-full rounded-sm border border-control bg-surface-2 px-4 text-base text-ink-1 transition-control " +
+  "w-full rounded-sm border border-control bg-surface-2 px-4 text-ink-1 transition-control " +
   "hover:border-ink-3 focus:border-accent focus:outline-2 focus:outline-offset-2 focus:outline-accent " +
   "aria-invalid:border-danger disabled:cursor-not-allowed disabled:border-line disabled:bg-surface-1 disabled:text-ink-4";
 

@@ -5,6 +5,7 @@ import { PartImage } from "@/components/ui/PartImage";
 import type { Sistem } from "@/content/asortiman";
 import { brojGrupa, grupeSistema } from "@/lib/asortiman";
 import { cn } from "@/lib/cn";
+import { typographer } from "@/lib/format";
 import { sistemRuta } from "@/lib/routes";
 
 /**
@@ -42,8 +43,8 @@ export function SystemCard({
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4 md:p-0 md:pr-2 xl:p-4">
-        <Naslov className="type-h3 text-ink-1">{sistem.naziv}</Naslov>
-        <p className="hidden type-body-s text-ink-2 sm:line-clamp-2 xl:line-clamp-3">{sistem.opis}</p>
+        <Naslov className="type-h3 text-ink-1">{typographer(sistem.naziv)}</Naslov>
+        <p className="hidden type-body-s text-ink-2 sm:line-clamp-2 xl:line-clamp-3">{typographer(sistem.opis)}</p>
         <p className="mt-auto flex items-center justify-between gap-2 pt-2 type-caption text-ink-3">
           <span>{brojGrupa(n)}</span>
           <ArrowRightIcon size={16} aria-hidden="true" className="shrink-0" />

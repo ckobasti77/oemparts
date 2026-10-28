@@ -92,7 +92,7 @@ export default function KontaktPage() {
                 </h2>
                 <p className="mt-3 text-ink-2">{adresa}</p>
                 <div className="mt-5">
-                  <MapaNaKlik upit={mapaUpit} adresa={adresa} oznake={t.mapa} />
+                  <MapaNaKlik upit={mapaUpit} adresa={adresa} oznake={t.mapa} ikona={<MapPinIcon size={24} />} />
                 </div>
                 <TextLink href={mapaLink(mapaUpit)} external className="mt-3">
                   {t.otvoriMapu}

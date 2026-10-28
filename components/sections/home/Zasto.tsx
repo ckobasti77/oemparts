@@ -7,6 +7,7 @@ import {
 
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { pocetna } from "@/content/pocetna";
+import { typographer } from "@/lib/format";
 import { popuniKanale } from "@/lib/links";
 
 /** Ikone redom uz stavke „Zašto“ (plan K01 §3.8). */
@@ -35,9 +36,9 @@ export function Zasto() {
               >
                 <Ikona size={24} aria-hidden="true" className="mt-0.5 shrink-0 text-ink-2" />
                 <div>
-                  <h3 className="type-h3 text-ink-1">{s.naslov}</h3>
+                  <h3 className="type-h3 text-ink-1">{typographer(s.naslov)}</h3>
                   <p className="mt-1.5 max-w-[52ch] text-ink-2">
-                    {popuniKanale(s.tekst, pocetna.kanaliZasto, "instr")}
+                    {typographer(popuniKanale(s.tekst, pocetna.kanaliZasto, "instr"))}
                   </p>
                 </div>
               </RevealItem>

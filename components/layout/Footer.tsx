@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowUpRightIcon, ClockIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr";
 
 import { IKONA_KANALA } from "@/components/layout/ContactChannels";
+import { RadnoVremeAdresa } from "@/components/layout/RadnoVremeAdresa";
 import { ButtonLink } from "@/components/ui/Button";
 import { SISTEMI } from "@/content/asortiman";
 import { ARIA, CTA, FOOTER, MENI, PRAVNO } from "@/content/navigacija";
@@ -104,28 +105,7 @@ export function Footer() {
               );
             })}
           </ul>
-          {radnoVreme || adresa ? (
-            <dl className="mt-3 flex flex-col gap-3 type-body-s text-ink-2">
-              {radnoVreme ? (
-                <div className="flex gap-3">
-                  <ClockIcon size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
-                  <div>
-                    <dt className="sr-only">{FOOTER.radnoVreme}</dt>
-                    <dd>{radnoVreme}</dd>
-                  </div>
-                </div>
-              ) : null}
-              {adresa ? (
-                <div className="flex gap-3">
-                  <MapPinIcon size={20} aria-hidden="true" className="shrink-0 text-ink-3" />
-                  <div>
-                    <dt className="sr-only">{FOOTER.adresa}</dt>
-                    <dd>{adresa}</dd>
-                  </div>
-                </div>
-              ) : null}
-            </dl>
-          ) : null}
+          <RadnoVremeAdresa radnoVreme={radnoVreme} adresa={adresa} className="mt-3 flex flex-col gap-3" />
         </div>
       </div>
       <div className="flex flex-col gap-4 border-t border-line px-page py-6 type-caption font-normal text-ink-3 lg:flex-row lg:items-start lg:justify-between lg:gap-10">

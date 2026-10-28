@@ -253,8 +253,8 @@ describe("validacija broja šasije u formi", () => {
     ["WVWZZZ1KZ8WQ00001", "Broj šasije ne sadrži slova I, O ni Q. Da li ste mislili na WVWZZZ1KZ8W000001?"],
     ["WVWZZZIKZ8W000001", "Broj šasije ne sadrži slova I, O ni Q. Da li ste mislili na WVWZZZ1KZ8W000001?"],
     ["WVWZZZ1KZ8WO", "Broj šasije ne sadrži slova I, O ni Q."],
-    ["WVWZZZ1KZ8W00000Č", "Broj šasije sadrži samo slova i brojeve."],
-    ["WVWZZZ1KZ8W0000/1", "Broj šasije sadrži samo slova i brojeve."],
+    ["WVWZZZ1KZ8W00000Č", "Broj šasije sadrži samo slova A–Z i cifre 0–9."],
+    ["WVWZZZ1KZ8W0000/1", "Broj šasije sadrži samo slova A–Z i cifre 0–9."],
   ])("%s", (vin, greska) => {
     expect(proveriUpit({ ...PUN, vin }).vin).toBe(greska);
   });

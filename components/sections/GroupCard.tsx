@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PartImage } from "@/components/ui/PartImage";
 import type { Grupa } from "@/content/asortiman";
+import { typographer } from "@/lib/format";
 import { grupaRuta } from "@/lib/routes";
 
 /**
@@ -23,8 +24,8 @@ export function GroupCard({ grupa, prioritet = false }: { grupa: Grupa; priorite
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3 sm:p-4">
-        <h3 className="type-body leading-snug font-semibold text-ink-1">{grupa.naziv}</h3>
-        <p className="hidden type-body-s text-ink-3 sm:block">{grupa.kratko}</p>
+        <h3 className="type-body leading-snug font-semibold text-ink-1">{typographer(grupa.naziv)}</h3>
+        <p className="hidden type-body-s text-ink-3 sm:block">{typographer(grupa.kratko)}</p>
       </div>
     </Link>
   );

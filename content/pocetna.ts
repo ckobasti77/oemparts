@@ -17,7 +17,7 @@ export const pocetna = {
   },
   marke: {
     naslov: "Delovi za pet marki VW grupe",
-    tekst: "Deo proveravamo po broju šasije, pa odgovara modelu i motoru vašeg vozila.",
+    tekst: "Pre ponude po broju šasije proveravamo da li deo odgovara modelu i motoru vašeg vozila.",
     link: "Marke i modeli",
   },
   sistemi: {
@@ -30,7 +30,7 @@ export const pocetna = {
     stavke: [
       {
         naslov: "Originalni i OEM delovi",
-        tekst: "Nudimo originalne delove i OEM delove, koje prave proizvođači što delove isporučuju i fabrikama vozila.",
+        tekst: "Nudimo originalne i OEM delove. OEM delove prave proizvođači koji iste delove isporučuju i fabrikama vozila.",
       },
       {
         naslov: "Provera po broju šasije",
@@ -64,6 +64,11 @@ export const pocetna = {
   kontakt: {
     naslov: "Kontakt",
     tekst: "Pozovite nas ili pišite. Za upit po delu pošaljite i broj šasije.",
+  },
+  /** Podnaslovi slika za deljenje (scripts/og.mjs): početna (`{marke}` = marke iz site.ts) i ostale strane. */
+  og: {
+    podnaslov: "Veleprodaja delova za {marke}",
+    opsti: "Originalni i OEM delovi za vozila VW grupe",
   },
   /** Kanali u rečenicama sa `{kanali}`: „Zašto“ (d) nabraja sve, upit samo one za slanje poruke. */
   kanaliZasto: ["telefon", "viber", "whatsapp", "email"] as const,
